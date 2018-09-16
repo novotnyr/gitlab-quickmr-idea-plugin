@@ -1,0 +1,40 @@
+<idea-plugin>
+    <id>com.github.novotnyr.gitlab-quickmr-idea-plugin</id>
+    <name>GitLab Quick Merge Request Plugin</name>
+    <version>1</version>
+    <vendor>Róbert Novotný</vendor>
+
+    <description><![CDATA[
+      Quickly create Merge Request for Gitlab projects<br>
+    ]]></description>
+
+    <change-notes><![CDATA[
+    ]]>
+    </change-notes>
+
+    <idea-version since-build="145.0"/>
+
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.vcs</depends>
+    <depends>Git4Idea</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="com.github.novotnyr.idea.git.GitService"/>
+        <projectService serviceImplementation="com.github.novotnyr.idea.gitlab.quickmr.settings.Settings"/>
+        <projectService serviceImplementation="com.github.novotnyr.idea.gitlab.GitLabFactory"/>
+
+        <vcsConfigurableProvider implementation="com.github.novotnyr.idea.gitlab.quickmr.settings.SettingsUiProvider"/>
+    </extensions>
+
+
+    <actions>
+        <action id="com.github.novotnyr.gitlab-quickmr-intellij-plugin.CreateMergeRequest"
+                class="com.github.novotnyr.idea.gitlab.quickmr.CreateMergeRequestAction" text="Create Quick Merge Request">
+            <add-to-group group-id="Git.ContextMenu"/>
+        </action>
+        <action class="com.github.novotnyr.idea.gitlab.quickmr.AssigneeGroup" id="com.github.novotnyr.idea.gitlab.quickmr.AssigneeGroup">
+            <add-to-group group-id="Git.ContextMenu"/>
+        </action>
+    </actions>
+
+</idea-plugin>
