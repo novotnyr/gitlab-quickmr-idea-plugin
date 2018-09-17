@@ -55,6 +55,8 @@ public class SettingsUi implements Configurable {
         this.project = project;
         Settings settings = ServiceManager.getService(this.project, Settings.class);
 
+        this.urlTextField.getEmptyText().setText("https://gitlab.com/api/v4");
+
         this.assigneeList = new JBList<>();
         this.assigneeList.setModel(this.assigneeListModel);
         this.assigneeList.setCellRenderer(new DefaultListCellRenderer() {
