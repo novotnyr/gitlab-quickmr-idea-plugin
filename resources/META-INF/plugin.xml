@@ -23,7 +23,7 @@
         <projectService serviceImplementation="com.github.novotnyr.idea.gitlab.quickmr.settings.Settings"/>
         <projectService serviceImplementation="com.github.novotnyr.idea.gitlab.GitLabFactory"/>
 
-        <vcsConfigurableProvider implementation="com.github.novotnyr.idea.gitlab.quickmr.settings.SettingsUiProvider"/>
+        <vcsConfigurableProvider implementation="com.github.novotnyr.idea.gitlab.quickmr.settings.SettingsUi$ConfigurableProvider"/>
     </extensions>
 
 
@@ -32,7 +32,7 @@
                 class="com.github.novotnyr.idea.gitlab.quickmr.CreateMergeRequestAction" text="Create Quick Merge Request">
             <add-to-group group-id="Git.ContextMenu"/>
         </action>
-        <action class="com.github.novotnyr.idea.gitlab.quickmr.AssigneeGroup" id="com.github.novotnyr.idea.gitlab.quickmr.AssigneeGroup">
+        <action class="com.github.novotnyr.idea.gitlab.quickmr.CreateMergeRequestAndAssignToActionGroup" id="com.github.novotnyr.idea.gitlab.quickmr.CreateMergeRequestAndAssignToActionGroup">
             <add-to-group group-id="Git.ContextMenu"/>
         </action>
     </actions>

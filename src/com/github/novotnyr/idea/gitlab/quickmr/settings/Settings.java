@@ -5,6 +5,9 @@ import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @State(name = "gitlab-quickmr", storages = @Storage("gitlab-quickmr.xml"))
 public class Settings implements PersistentStateComponent<Settings.State> {
     private State state = new State();
@@ -22,7 +25,7 @@ public class Settings implements PersistentStateComponent<Settings.State> {
     public boolean isInitialized() {
         return this.state.gitLabUri != null
                 && this.state.accessToken != null
-                && this.state.defaultAssignee != null
+                && this.state.defaultAssignees != null && ! this.state.defaultAssignees.isEmpty()
                 && this.state.defaultTargetBranch != null
                 && this.state.defaultTitle != null;
     }
@@ -36,11 +39,14 @@ public class Settings implements PersistentStateComponent<Settings.State> {
     }
 
     public User getDefaultAssignee() {
-        return this.state.defaultAssignee;
+        if (this.state.defaultAssignees == null || this.state.defaultAssignees.isEmpty()) {
+            return null;
+        }
+        return this.state.defaultAssignees.get(0);
     }
 
     public Long getDefaultAssigneeId() {
-        User defaultAssignee = this.state.defaultAssignee;
+        User defaultAssignee = getDefaultAssignee();
         if (defaultAssignee != null) {
             return defaultAssignee.getId();
         } else {
@@ -48,9 +54,15 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         }
     }
 
-    public void setDefaultAssignee(User defaultAssignee) {
-        this.state.defaultAssignee = defaultAssignee;
+
+    public List<User> getDefaultAssignees() {
+        return this.state.defaultAssignees != null ? this.state.defaultAssignees : new ArrayList<>();
     }
+
+    public void setDefaultAssignees(List<User> defaultAssignees) {
+        this.state.defaultAssignees = defaultAssignees;
+    }
+
 
     public String getGitLabUri() {
         return this.state.gitLabUri;
@@ -81,11 +93,10 @@ public class Settings implements PersistentStateComponent<Settings.State> {
 
         public String accessToken;
 
-        public User defaultAssignee;
+        public List<User> defaultAssignees = new ArrayList<>();
 
         public String defaultTargetBranch;
 
         public String defaultTitle;
-
     }
 }

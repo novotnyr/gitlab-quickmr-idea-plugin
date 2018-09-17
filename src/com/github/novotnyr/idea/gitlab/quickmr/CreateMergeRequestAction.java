@@ -4,6 +4,7 @@ import com.github.novotnyr.idea.git.GitService;
 import com.github.novotnyr.idea.gitlab.GitLab;
 import com.github.novotnyr.idea.gitlab.MergeRequestRequest;
 import com.github.novotnyr.idea.gitlab.MergeRequestResponse;
+import com.github.novotnyr.idea.gitlab.User;
 import com.github.novotnyr.idea.gitlab.quickmr.settings.Settings;
 import com.github.novotnyr.idea.gitlab.quickmr.settings.SettingsUi;
 import com.intellij.notification.Notification;
@@ -16,7 +17,9 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import javax.swing.Icon;
 import javax.swing.event.HyperlinkEvent;
 import java.awt.Desktop;
 import java.io.IOException;
@@ -24,7 +27,24 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class CreateMergeRequestAction extends AnAction {
+    private User assignee;
+
     private final GitService gitService = ServiceManager.getService(GitService.class);
+
+    public CreateMergeRequestAction() {
+    }
+
+    public CreateMergeRequestAction(Icon icon) {
+        super(icon);
+    }
+
+    public CreateMergeRequestAction(@Nullable String text) {
+        super(text);
+    }
+
+    public CreateMergeRequestAction(@Nullable String text, @Nullable String description, @Nullable Icon icon) {
+        super(text, description, icon);
+    }
 
     @Override
     public void actionPerformed(AnActionEvent event) {
@@ -56,7 +76,11 @@ public class CreateMergeRequestAction extends AnAction {
         MergeRequestRequest requestRequest = new MergeRequestRequest();
         requestRequest.setSourceBranch(getSourceBranch(selectedModule));
         requestRequest.setTargetBranch(settings.getDefaultTargetBranch());
-        requestRequest.setAssigneeId(settings.getDefaultAssigneeId());
+        if (this.assignee == null) {
+            requestRequest.setAssigneeId(settings.getDefaultAssigneeId());
+        } else {
+            requestRequest.setAssigneeId(this.assignee.getId());
+        }
         requestRequest.setTitle(settings.getDefaultTitle());
 
         String projectName = getProjectName(selectedModule);
@@ -110,5 +134,7 @@ public class CreateMergeRequestAction extends AnAction {
         return null;
     }
 
-
+    public void setAssignee(User assignee) {
+        this.assignee = assignee;
+    }
 }

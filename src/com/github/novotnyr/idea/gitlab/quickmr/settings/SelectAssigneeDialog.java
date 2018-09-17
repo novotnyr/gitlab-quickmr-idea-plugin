@@ -8,13 +8,18 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.ui.CollectionListModel;
 import com.intellij.ui.ListSpeedSearch;
 import com.intellij.ui.components.JBList;
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
 import org.jdesktop.swingx.renderer.DefaultListRenderer;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
@@ -78,4 +83,5 @@ public class SelectAssigneeDialog extends DialogWrapper {
     public User getAssignee() {
         return (User) this.userListView.getSelectedValue();
     }
+
 }

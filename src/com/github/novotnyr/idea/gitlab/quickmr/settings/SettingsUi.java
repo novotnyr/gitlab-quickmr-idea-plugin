@@ -2,6 +2,7 @@ package com.github.novotnyr.idea.gitlab.quickmr.settings;
 
 import com.github.novotnyr.idea.gitlab.GitLab;
 import com.github.novotnyr.idea.gitlab.User;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.application.ex.ApplicationManagerEx;
 import com.intellij.openapi.components.ServiceManager;
@@ -11,138 +12,117 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.ui.DocumentAdapter;
+import com.intellij.openapi.vcs.VcsConfigurableProvider;
+import com.intellij.ui.AnActionButton;
+import com.intellij.ui.CollectionListModel;
+import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.awt.RelativePoint;
-import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.JBPanel;
+import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBPasswordField;
 import com.intellij.ui.components.JBTextField;
-import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
-import org.jdesktop.swingx.JXButton;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import javax.swing.JList;
+import javax.swing.JPanel;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SettingsUi implements Configurable {
-    private JBTextField uriTextField = new JBTextField();
-    private JBPasswordField accessTokenTextField = new JBPasswordField();
-    private JBLabel defaultAssigneeLabel = new JBLabel("none");
-    private JXButton selectDefaultAssigneeButton = new JXButton("Select Default Assignee");
-    private JBTextField defaultTargetBranchTextField = new JBTextField();
-    private JBTextField defaultTitleTextField = new JBTextField();
-    private JBLabel serverValidatedLabel = new JBLabel();
+    private final Project project;
 
-    private Project project;
+    private JBTextField urlTextField;
+    private JBPasswordField accessTokenTextField;
+    private JBTextField targetBranchTextField;
+    private JBTextField mergeRequestTitleTextField;
+    private JButton validateServerButton;
+    private JLabel defaultAssigneeLabel;
+    private JBList<User> assigneeList;
+    private JPanel assigneeListPlaceHolder;
+    private JPanel rootPanel;
 
-    private User defaultAssignee;
-
-    private boolean needsServerValidation = true;
-
-    private DocumentListener needsServerValidationDocumentListener = new DocumentAdapter() {
-        @Override
-        protected void textChanged(DocumentEvent documentEvent) {
-            SettingsUi.this.needsServerValidation = true;
-            SettingsUi.this.serverValidatedLabel.setText("");
-        }
-    };
+    private CollectionListModel<User> assigneeListModel = new CollectionListModel<>();
 
     public SettingsUi(Project project) {
         this.project = project;
-    }
-
-    @Nls(capitalization = Nls.Capitalization.Title)
-    @Override
-    public String getDisplayName() {
-        return "GitLab Quick MR";
-    }
-
-    @Nullable
-    @Override
-    public JComponent createComponent() {
         Settings settings = ServiceManager.getService(this.project, Settings.class);
-        this.defaultAssignee = settings.getDefaultAssignee();
 
-        JBPanel panel = new JBPanel(new MigLayout("wrap 2", "[][grow, fill]"));
+        this.assigneeList = new JBList<>();
+        this.assigneeList.setModel(this.assigneeListModel);
+        this.assigneeList.setCellRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                User user = (User) value;
+                String renderedText = user.getName() + " (" + user.getUsername() + ")";
+                return super.getListCellRendererComponent(list, renderedText, index, isSelected, cellHasFocus);
+            }
+        });
 
-        panel.add(new JLabel("GitLab URL"));
-        uriTextField.setText(settings.getGitLabUri());
-        uriTextField.getEmptyText().setText("https://gitlab.com/api/v4");
-        uriTextField.getDocument().addDocumentListener(this.needsServerValidationDocumentListener);
-        panel.add(uriTextField);
+        this.assigneeListPlaceHolder.setLayout(new BorderLayout());
+        this.assigneeListPlaceHolder.add(
+                ToolbarDecorator
+                        .createDecorator(this.assigneeList)
+                        .setAddAction(this::onAddAssignee)
+                        .setAddActionUpdater(this::isAddAssigneeEnabled)
+                        .setRemoveAction(this::onRemoveAssignee)
+                        .createPanel()
+        );
 
-        panel.add(new JLabel("Access Token"));
-        accessTokenTextField.setText(settings.getAccessToken());
-        accessTokenTextField.getDocument().addDocumentListener(this.needsServerValidationDocumentListener);
-        panel.add(accessTokenTextField);
+        this.validateServerButton.addActionListener(this::onValidateServerButtonClicked);
 
-        panel.add(new JLabel());
-
-        panel.add(this.serverValidatedLabel, "split 2");
-
-        JButton validateButton = new JButton("Validate");
-        validateButton.addActionListener(this::onValidateButtonClicked);
-        panel.add(validateButton, "right, growx 0");
-
-        panel.add(new JLabel("Default Assignee"));
-        JBPanel assigneePanel = new JBPanel(new BorderLayout());
-        panel.add(assigneePanel);
-
-        if (settings.getDefaultAssignee() != null) {
-            defaultAssigneeLabel.setText(settings.getDefaultAssignee().getName());
-        }
-        assigneePanel.add(defaultAssigneeLabel, BorderLayout.CENTER);
-
-        selectDefaultAssigneeButton.addActionListener(this::onSelectDefaultAssigneeButtonActionPerformed);
-        assigneePanel.add(selectDefaultAssigneeButton, BorderLayout.LINE_END);
-
-        panel.add(new JLabel("Default Target Branch"));
-        defaultTargetBranchTextField.setText(String.valueOf(settings.getDefaultTargetBranch()));
-        panel.add(defaultTargetBranchTextField);
-
-        panel.add(new JBLabel("Default Merge Request Title"));
-        this.defaultTitleTextField.setText(settings.getDefaultTitle());
-        panel.add(this.defaultTitleTextField);
-
-        return panel;
+        this.urlTextField.setText(settings.getGitLabUri());
+        this.accessTokenTextField.setText(settings.getAccessToken());
+        this.targetBranchTextField.setText(settings.getDefaultTargetBranch());
+        this.mergeRequestTitleTextField.setText(settings.getDefaultTitle());
+        this.assigneeListModel.replaceAll(settings.getDefaultAssignees());
     }
 
-    private void onValidateButtonClicked(ActionEvent event) {
-        GitLab gitLab = new GitLab(this.uriTextField.getText(), String.valueOf(accessTokenTextField.getPassword()));
-        gitLab.version().thenRun(() -> {
-                    this.serverValidatedLabel.setText("Server validated");
+    private void onValidateServerButtonClicked(ActionEvent event) {
+        GitLab gitLab = new GitLab(this.urlTextField.getText(), String.valueOf(accessTokenTextField.getPassword()));
+                gitLab.version().thenRun(() -> {
+                    JBPopupFactory.getInstance()
+                            .createHtmlTextBalloonBuilder("GitLab connection successful", MessageType.INFO, null)
+                            .setFadeoutTime(7500)
+                            .createBalloon()
+                            .show(RelativePoint.getNorthWestOf(this.validateServerButton),
+                                    Balloon.Position.atRight);
+
                 })
                 .exceptionally(t -> {
-                    this.serverValidatedLabel.setText("Server credentials failed");
+                    JBPopupFactory.getInstance()
+                            .createHtmlTextBalloonBuilder("Server is not available. Please check URL or access token", MessageType.ERROR, null)
+                            .setFadeoutTime(7500)
+                            .createBalloon()
+                            .show(RelativePoint.getNorthWestOf(this.validateServerButton),
+                                    Balloon.Position.atRight);
+
                     return null;
                 });
     }
 
-    @Override
-    public void disposeUIResources() {
-        uriTextField.getDocument().removeDocumentListener(this.needsServerValidationDocumentListener);
-        accessTokenTextField.getDocument().removeDocumentListener(this.needsServerValidationDocumentListener);
+    public JPanel getRootPanel() {
+        return rootPanel;
     }
 
-    public void onSelectDefaultAssigneeButtonActionPerformed(ActionEvent event) {
-        GitLab gitLab = new GitLab(this.uriTextField.getText(), String.valueOf(accessTokenTextField.getPassword()));
+    //-------
+
+    public void onAddAssignee(AnActionButton anActionButton) {
+        GitLab gitLab = new GitLab(this.urlTextField.getText(), String.valueOf(accessTokenTextField.getPassword()));
         gitLab.version().thenRun(() -> {
                     ApplicationManagerEx.getApplicationEx().invokeLater(() -> {
                         SelectAssigneeDialog dialog = new SelectAssigneeDialog(this.project, gitLab);
                         if (dialog.showAndGet()) {
                             User assignee = dialog.getAssignee();
                             if (assignee != null) {
-                                this.defaultAssignee = assignee;
-                                defaultAssigneeLabel.setText(assignee.getName());
+                                this.assigneeListModel.add(assignee);
                             }
                         }
                     }, ModalityState.any());
@@ -153,10 +133,49 @@ public class SettingsUi implements Configurable {
                             .createHtmlTextBalloonBuilder("Server is not available. Please check URL or access token", MessageType.ERROR, null)
                             .setFadeoutTime(7500)
                             .createBalloon()
-                            .show(RelativePoint.getNorthWestOf(this.selectDefaultAssigneeButton),
+                            .show(RelativePoint.getNorthWestOf(this.assigneeList),
                                     Balloon.Position.atRight);
                     return null;
                 });
+    }
+
+    private boolean isAddAssigneeEnabled(AnActionEvent event) { ;
+        return StringUtils.isNotEmpty(this.urlTextField.getText());
+    }
+
+    private void onRemoveAssignee(AnActionButton anActionButton) {
+        int selectedIndex = this.assigneeList.getSelectedIndex();
+        if (selectedIndex >= 0) {
+            this.assigneeListModel.remove(selectedIndex);
+        }
+    }
+
+    public List<String> validate() {
+        List<String> validationErrors = new ArrayList<>();
+        if (!StringUtils.isNotEmpty(this.urlTextField.getText())) {
+            validationErrors.add("Missing Gitlab URI");
+        }
+        if (!StringUtils.isNotEmpty(this.targetBranchTextField.getText())) {
+            validationErrors.add("Missing default target branch");
+        }
+        if (this.assigneeListModel == null || this.assigneeListModel.isEmpty()) {
+            validationErrors.add("Please set at least one assignee");
+        }
+        return validationErrors;
+    }
+
+    //-------
+
+    @Nls(capitalization = Nls.Capitalization.Title)
+    @Override
+    public String getDisplayName() {
+        return "GitLab Quick Merge Request";
+    }
+
+    @Nullable
+    @Override
+    public JComponent createComponent() {
+        return this.rootPanel;
     }
 
     @Override
@@ -166,30 +185,25 @@ public class SettingsUi implements Configurable {
 
     @Override
     public void apply() throws ConfigurationException {
-        List<String> validationErrors = new ArrayList<>();
+        List<String> validationErrors = validate();
+        if (!validationErrors.isEmpty()) {
+            throw new ConfigurationException("<li>" + String.join("<li>", validationErrors));
+        }
 
         Settings settings = ServiceManager.getService(this.project, Settings.class);
 
-        if (StringUtils.isNotEmpty(this.uriTextField.getText())) {
-            settings.setGitLabUri(this.uriTextField.getText());
-        } else {
-            validationErrors.add("Missing Gitlab URI");
-        }
+        settings.setGitLabUri(this.urlTextField.getText());
         settings.setAccessToken(String.valueOf(this.accessTokenTextField.getPassword()));
-        if (StringUtils.isNotEmpty(this.defaultTargetBranchTextField.getText())) {
-            settings.setDefaultTargetBranch(this.defaultTargetBranchTextField.getText());
-        } else {
-            validationErrors.add("Missing default target branch");
-        }
-        if (this.defaultAssignee != null) {
-            settings.setDefaultAssignee(this.defaultAssignee);
-        } else {
-            validationErrors.add("Default Assignee must be set");
-        }
-        settings.setDefaultTitle(this.defaultTitleTextField.getText());
+        settings.setDefaultTargetBranch(this.targetBranchTextField.getText());
+        settings.setDefaultAssignees(this.assigneeListModel.getItems());
+        settings.setDefaultTitle(this.mergeRequestTitleTextField.getText());
+    }
 
-        if (!validationErrors.isEmpty()) {
-            throw new ConfigurationException("* " + String.join("<br />* ", validationErrors));
+    public static class ConfigurableProvider implements VcsConfigurableProvider {
+        @Override
+        public Configurable getConfigurable(Project project) {
+            return new SettingsUi(project);
         }
     }
+
 }

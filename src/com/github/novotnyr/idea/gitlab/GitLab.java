@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -40,7 +41,14 @@ public class GitLab {
     }
 
     public CompletableFuture<Boolean> version() {
+        CompletableFuture<Boolean> result = new CompletableFuture<>();
+
         String url = this.baseUri + "/version";
+
+        if (HttpUrl.parse(url) == null) {
+            result.completeExceptionally(new HttpResponseException(500, "Incorrect Gitlab URL"));
+            return result;
+        }
 
         Request request = new Request.Builder()
                 .url(url)
@@ -48,7 +56,6 @@ public class GitLab {
                 .get()
                 .build();
 
-        CompletableFuture<Boolean> result = new CompletableFuture<>();
 
         Call call = httpClient.newCall(request);
         call.enqueue(new Callback() {
