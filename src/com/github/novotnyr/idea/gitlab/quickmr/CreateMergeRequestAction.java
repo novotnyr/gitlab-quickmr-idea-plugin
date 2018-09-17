@@ -90,6 +90,21 @@ public class CreateMergeRequestAction extends AnAction {
                 .exceptionally(t -> createErrorNotification(t));
     }
 
+    @Override
+    public void update(AnActionEvent e) {
+        Project project = e.getProject();
+        if (project == null) {
+            return;
+        }
+        Settings settings = ServiceManager.getService(project, Settings.class);
+        if (this.assignee == null) {
+            // assignee will be deduced from settings, enable according to preferences
+            e.getPresentation().setEnabledAndVisible(settings.isEnableMergeRequestToFavoriteAssignee());
+            return;
+        }
+        e.getPresentation().setEnabledAndVisible(true);
+    }
+
     private String getProjectName(SelectedModule selectedModule) {
         String projectGitUrl = this.gitService.getProjectGitUrl(selectedModule);
         if (projectGitUrl == null) {

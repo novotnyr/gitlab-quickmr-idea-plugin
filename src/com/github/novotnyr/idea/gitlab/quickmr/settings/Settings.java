@@ -88,6 +88,15 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         this.state.defaultTargetBranch = defaultTargetBranch;
     }
 
+
+    public boolean isEnableMergeRequestToFavoriteAssignee() {
+        return this.state.enableMergeRequestToFavoriteAssignee;
+    }
+
+    public void setEnableMergeRequestToFavoriteAssignee(boolean enableMergeRequestToFavoriteAssignee) {
+        this.state.enableMergeRequestToFavoriteAssignee = enableMergeRequestToFavoriteAssignee;
+    }
+
     public static class State {
         public String gitLabUri;
 
@@ -98,5 +107,8 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         public String defaultTargetBranch;
 
         public String defaultTitle;
+
+        public boolean enableMergeRequestToFavoriteAssignee = true;
+
     }
 }

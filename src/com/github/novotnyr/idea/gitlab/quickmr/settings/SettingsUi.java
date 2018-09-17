@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -48,6 +49,7 @@ public class SettingsUi implements Configurable {
     private JBList<User> assigneeList;
     private JPanel assigneeListPlaceHolder;
     private JPanel rootPanel;
+    private JCheckBox enableDefaultAssigneeActionCheckBox;
 
     private CollectionListModel<User> assigneeListModel = new CollectionListModel<>();
 
@@ -64,6 +66,9 @@ public class SettingsUi implements Configurable {
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 User user = (User) value;
                 String renderedText = user.getName() + " (" + user.getUsername() + ")";
+                if (index == 0) {
+                    renderedText = renderedText + " [favourite assignee]";
+                }
                 return super.getListCellRendererComponent(list, renderedText, index, isSelected, cellHasFocus);
             }
         });
@@ -85,6 +90,7 @@ public class SettingsUi implements Configurable {
         this.targetBranchTextField.setText(settings.getDefaultTargetBranch());
         this.mergeRequestTitleTextField.setText(settings.getDefaultTitle());
         this.assigneeListModel.replaceAll(settings.getDefaultAssignees());
+        this.enableDefaultAssigneeActionCheckBox.setSelected(settings.isEnableMergeRequestToFavoriteAssignee());
     }
 
     private void onValidateServerButtonClicked(ActionEvent event) {
@@ -199,6 +205,7 @@ public class SettingsUi implements Configurable {
         settings.setDefaultTargetBranch(this.targetBranchTextField.getText());
         settings.setDefaultAssignees(this.assigneeListModel.getItems());
         settings.setDefaultTitle(this.mergeRequestTitleTextField.getText());
+        settings.setEnableMergeRequestToFavoriteAssignee(this.enableDefaultAssigneeActionCheckBox.isSelected());
     }
 
     public static class ConfigurableProvider implements VcsConfigurableProvider {
