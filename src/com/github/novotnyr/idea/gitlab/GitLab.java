@@ -1,7 +1,6 @@
 package com.github.novotnyr.idea.gitlab;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.HttpUrl;
@@ -78,7 +77,7 @@ public class GitLab {
         return result;
     }
 
-    public CompletableFuture<GitLabProject> searchProject(String projectName) {
+    public CompletableFuture<List<GitLabProject>> searchProject(String projectName) {
         String url = this.baseUri + "/projects?search=" + projectName;
 
         Request request = new Request.Builder()
@@ -87,27 +86,10 @@ public class GitLab {
                 .get()
                 .build();
 
-        CompletableFuture<GitLabProject> result = new CompletableFuture<>();
+        CompletableFuture<List<GitLabProject>> result = new CompletableFuture<>();
 
         Call call = httpClient.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                result.completeExceptionally(e);
-            }
-
-            @Override
-            public void onResponse(Response response) throws IOException {
-                String json = response.body().string();
-                GitLabProject[] projects = gson.fromJson(json, GitLabProject[].class);
-                if (projects.length > 0) {
-                    result.complete(projects[0]);
-                } else {
-                    result.complete(new GitLabProject());
-                }
-            }
-        });
-
+        call.enqueue(JsonHttpResponseCallback.ofList(result, gson));
         return result;
     }
 
@@ -195,25 +177,8 @@ public class GitLab {
                 .build();
 
         CompletableFuture<List<User>> result = new CompletableFuture<>();
-
         Call call = httpClient.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                result.completeExceptionally(e);
-            }
-
-            @Override
-            public void onResponse(Response response) throws IOException {
-                try {
-                    String json = response.body().string();
-                    User[] users = gson.fromJson(json, User[].class);
-                    result.complete(Arrays.asList(users));
-                } catch (JsonSyntaxException e) {
-                    result.completeExceptionally(e);
-                }
-            }
-        });
+        call.enqueue(JsonHttpResponseCallback.ofList(result, gson));
         return result;
     }
 
@@ -224,23 +189,7 @@ public class GitLab {
         CompletableFuture<List<User>> result = new CompletableFuture<>();
 
         Call call = httpClient.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                result.completeExceptionally(e);
-            }
-
-            @Override
-            public void onResponse(Response response) throws IOException {
-                try {
-                    String json = response.body().string();
-                    User[] users = gson.fromJson(json, User[].class);
-                    result.complete(Arrays.asList(users));
-                } catch (JsonSyntaxException e) {
-                    result.completeExceptionally(e);
-                }
-            }
-        });
+        call.enqueue(JsonHttpResponseCallback.ofList(result, gson));
         return result;
     }
 
@@ -248,31 +197,12 @@ public class GitLab {
         Request request = prepareRequest("/users?username=" + username)
                 .build();
 
-        CompletableFuture<User> result = new CompletableFuture<>();
+        CompletableFuture<List<User>> result = new CompletableFuture<>();
 
-        Call call = httpClient.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                result.completeExceptionally(e);
-            }
-
-            @Override
-            public void onResponse(Response response) throws IOException {
-                try {
-                    String json = response.body().string();
-                    User[] users = gson.fromJson(json, User[].class);
-                    if (users.length > 0) {
-                        result.complete(users[0]);
-                    } else {
-                        result.complete(new User());
-                    }
-                } catch (JsonSyntaxException e) {
-                    result.completeExceptionally(e);
-                }
-            }
-        });
-        return result;
+        httpClient
+                .newCall(request)
+                .enqueue(JsonHttpResponseCallback.ofList(result, this.gson));
+        return result.thenApply(users -> users.get(0));
     }
 
     public CompletableFuture<MergeRequestResponse> createMergeRequest(String projectId, MergeRequestRequest mergeRequestRequest) {
@@ -300,22 +230,18 @@ public class GitLab {
         CompletableFuture<MergeRequestResponse> result = new CompletableFuture<>();
 
         Call call = httpClient.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                result.completeExceptionally(e);
-            }
-
+        call.enqueue(new JsonHttpResponseCallback<MergeRequestResponse>(MergeRequestResponse.class, result, this.gson) {
             @Override
             public void onResponse(Response response) throws IOException {
                 if (response.code() == 409) {
                     result.completeExceptionally(new DuplicateMergeRequestException());
                     return;
                 }
-                String json = response.body().string();
-                System.out.println(json);
-                MergeRequestResponse mergeRequestResponse = gson.fromJson(json, MergeRequestResponse.class);
-                result.complete(mergeRequestResponse);
+                try(ResponseBody body = response.body()) {
+                    String json = body.string();
+                    MergeRequestResponse mergeRequestResponse = gson.fromJson(json, MergeRequestResponse.class);
+                    result.complete(mergeRequestResponse);
+                }
             }
         });
 
