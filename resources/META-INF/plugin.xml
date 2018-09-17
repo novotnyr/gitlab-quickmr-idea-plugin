@@ -6,6 +6,11 @@
 
     <description><![CDATA[
       Quickly create Merge Request for Gitlab projects<br>
+      <ul>
+      <li>Quickly create merge requests with default settings and submit them with a single click</li>
+      <li>Specify your favourite merge request assignees</li>
+      <li>Supports GitLab API v4</li>
+      </ul>
     ]]></description>
 
     <change-notes><![CDATA[
