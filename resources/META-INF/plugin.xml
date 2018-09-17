@@ -29,7 +29,7 @@
 
     <actions>
         <action id="com.github.novotnyr.gitlab-quickmr-intellij-plugin.CreateMergeRequest"
-                class="com.github.novotnyr.idea.gitlab.quickmr.CreateMergeRequestAction" text="Create Quick Merge Request">
+                class="com.github.novotnyr.idea.gitlab.quickmr.CreateMergeRequestAction" text="Quick Merge Request">
             <add-to-group group-id="Git.ContextMenu"/>
         </action>
         <action class="com.github.novotnyr.idea.gitlab.quickmr.CreateMergeRequestAndAssignToActionGroup" id="com.github.novotnyr.idea.gitlab.quickmr.CreateMergeRequestAndAssignToActionGroup">

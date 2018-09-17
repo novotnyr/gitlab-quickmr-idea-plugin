@@ -15,7 +15,7 @@ import java.util.List;
 
 public class CreateMergeRequestAndAssignToActionGroup extends ActionGroup {
     public CreateMergeRequestAndAssignToActionGroup() {
-        super("Create Merge Request Assigned to", true);
+        super("Quick Merge Request Assigned to", true);
     }
 
     @NotNull
