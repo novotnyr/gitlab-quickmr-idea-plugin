@@ -161,11 +161,15 @@ public class SettingsUi implements Configurable {
     public List<String> validate() {
         List<String> validationErrors = new ArrayList<>();
         if (!StringUtils.isNotEmpty(this.urlTextField.getText())) {
-            validationErrors.add("Missing Gitlab URI");
+            validationErrors.add("Missing GitLab URI");
         }
         if (!StringUtils.isNotEmpty(this.targetBranchTextField.getText())) {
             validationErrors.add("Missing default target branch");
         }
+        if (!StringUtils.isNotEmpty(this.mergeRequestTitleTextField.getText())) {
+            validationErrors.add("Missing default Merge Request title");
+        }
+
         if (this.assigneeListModel == null || this.assigneeListModel.isEmpty()) {
             validationErrors.add("Please set at least one assignee");
         }
