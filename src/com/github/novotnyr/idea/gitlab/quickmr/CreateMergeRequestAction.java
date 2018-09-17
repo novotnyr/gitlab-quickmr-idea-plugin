@@ -1,6 +1,7 @@
 package com.github.novotnyr.idea.gitlab.quickmr;
 
 import com.github.novotnyr.idea.git.GitService;
+import com.github.novotnyr.idea.gitlab.DuplicateMergeRequestException;
 import com.github.novotnyr.idea.gitlab.GitLab;
 import com.github.novotnyr.idea.gitlab.MergeRequestRequest;
 import com.github.novotnyr.idea.gitlab.MergeRequestResponse;
@@ -86,7 +87,7 @@ public class CreateMergeRequestAction extends AnAction {
         String projectName = getProjectName(selectedModule);
 
         gitLab.createMergeRequest(projectName, requestRequest)
-                .thenAccept(mergeRequestResponse -> createNotification(mergeRequestResponse, project, settings))
+                .thenAccept(mergeRequestResponse -> createNotification(mergeRequestResponse, project, projectName, settings))
                 .exceptionally(t -> createErrorNotification(t));
     }
 
@@ -118,11 +119,11 @@ public class CreateMergeRequestAction extends AnAction {
         return this.gitService.getCurrentBranch(selectedModule);
     }
 
-    private void createNotification(MergeRequestResponse mergeRequestResponse, Project project, Settings settings) {
+    private void createNotification(MergeRequestResponse mergeRequestResponse, Project project, String projectName, Settings settings) {
         String message = "Merge Request created";
 
         Notification notification = new Notification("quickmr", "Merge Request Created",
-                "Merge Request created<br/><a href='mr'>View in GitLab</a>",
+                "Merge Request created in module <i>" + projectName + "</i> <br/><a href='mr'>View in GitLab</a>",
                 NotificationType.INFORMATION,
                 new NotificationListener() {
                     @Override
@@ -142,8 +143,12 @@ public class CreateMergeRequestAction extends AnAction {
     }
 
     private Void createErrorNotification(Throwable t) {
-        Notification notification = new Notification("quickmr", "Merge Request Failed", "Failed to create merge request: " + t
-                .getMessage(), NotificationType.ERROR);
+        String message = "Failed to create merge request: " + t.getMessage();
+        if (t.getCause() instanceof DuplicateMergeRequestException) {
+            message = "Cannot create Merge Request: it already exists";
+        }
+
+        Notification notification = new Notification("quickmr", "Merge Request Failed", message, NotificationType.ERROR);
 
         Notifications.Bus.notify(notification);
         return null;

@@ -237,6 +237,9 @@ public class GitLab {
                     result.completeExceptionally(new DuplicateMergeRequestException());
                     return;
                 }
+                if (response.code() == 400) {
+                    result.completeExceptionally(new BadMergeRequestException(response.message()));
+                }
                 try(ResponseBody body = response.body()) {
                     String json = body.string();
                     MergeRequestResponse mergeRequestResponse = gson.fromJson(json, MergeRequestResponse.class);
