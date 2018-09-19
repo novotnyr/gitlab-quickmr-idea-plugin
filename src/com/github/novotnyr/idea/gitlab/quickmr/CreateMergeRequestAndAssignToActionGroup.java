@@ -32,7 +32,7 @@ public class CreateMergeRequestAndAssignToActionGroup extends ActionGroup {
 
         List<AnAction> actions = new ArrayList<>();
         for (User assignee : settings.getDefaultAssignees()) {
-            CreateMergeRequestAction action = new CreateMergeRequestAction("" + assignee.getUsername());
+            CreateMergeRequestAction action = new CreateMergeRequestAction("" + assignee.getName());
             action.setAssignee(assignee);
 
             actions.add(action);
