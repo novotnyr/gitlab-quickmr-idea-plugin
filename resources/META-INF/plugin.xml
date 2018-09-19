@@ -1,11 +1,11 @@
 <idea-plugin>
     <id>com.github.novotnyr.gitlab-quickmr-idea-plugin</id>
-    <name>GitLab Quick Merge Request Plugin</name>
+    <name>GitLab Quick Merge Request</name>
     <version>2</version>
     <vendor>Róbert Novotný</vendor>
 
     <description><![CDATA[
-      Quickly create Merge Request for Gitlab projects<br>
+      Quickly create Merge Request for GitLab projects<br>
       <ul>
       <li>Quickly create merge requests with default settings and submit them with a single click</li>
       <li>Specify your favourite merge request assignees</li>
