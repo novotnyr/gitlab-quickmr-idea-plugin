@@ -2,6 +2,7 @@ package com.github.novotnyr.idea.gitlab.quickmr.settings;
 
 import com.github.novotnyr.idea.gitlab.GitLab;
 import com.github.novotnyr.idea.gitlab.User;
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.application.ex.ApplicationManagerEx;
@@ -67,7 +68,12 @@ public class SettingsUi implements Configurable {
                 User user = (User) value;
                 String renderedText = user.getName() + " (" + user.getUsername() + ")";
                 if (index == 0) {
-                    renderedText = renderedText + " [favourite assignee]";
+                    Component component = super.getListCellRendererComponent(list, renderedText, index, isSelected, cellHasFocus);
+                    if (component instanceof JLabel) {
+                        JLabel label = (JLabel) component;
+                        label.setIcon(AllIcons.Toolwindows.ToolWindowFavorites);
+                        return label;
+                    }
                 }
                 return super.getListCellRendererComponent(list, renderedText, index, isSelected, cellHasFocus);
             }
