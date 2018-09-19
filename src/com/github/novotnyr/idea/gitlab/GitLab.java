@@ -45,7 +45,7 @@ public class GitLab {
         String url = this.baseUri + "/version";
 
         if (HttpUrl.parse(url) == null) {
-            result.completeExceptionally(new HttpResponseException(500, "Incorrect Gitlab URL"));
+            result.completeExceptionally(new HttpResponseException(500, "Incorrect GitLab URL"));
             return result;
         }
 
