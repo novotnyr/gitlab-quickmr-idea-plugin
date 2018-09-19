@@ -37,3 +37,7 @@ Compatibility
 
 This plugin is compatible with all JetBrains product that enable
 Git VC integration.
+
+Screenshot
+----------
+![Screenshot of submenu](./screenshot.png)
