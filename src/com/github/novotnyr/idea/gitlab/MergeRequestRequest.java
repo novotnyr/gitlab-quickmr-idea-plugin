@@ -14,6 +14,9 @@ public class MergeRequestRequest {
     @SerializedName("assignee_id")
     private long assigneeId;
 
+    @SerializedName("remove_source_branch")
+    private boolean removeSourceBranch;
+
     public String getSourceBranch() {
         return sourceBranch;
     }
@@ -44,5 +47,13 @@ public class MergeRequestRequest {
 
     public void setAssigneeId(long assigneeId) {
         this.assigneeId = assigneeId;
+    }
+
+    public boolean isRemoveSourceBranch() {
+        return removeSourceBranch;
+    }
+
+    public void setRemoveSourceBranch(boolean removeSourceBranch) {
+        this.removeSourceBranch = removeSourceBranch;
     }
 }

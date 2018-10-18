@@ -116,6 +116,14 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         this.state.enableMergeRequestToFavoriteAssignee = enableMergeRequestToFavoriteAssignee;
     }
 
+    public boolean isRemoveSourceBranchOnMerge() {
+        return this.state.removeSourceBranchOnMerge;
+    }
+
+    public void setRemoveSourceBranchOnMerge(boolean removeSourceBranchOnMerge) {
+        this.state.removeSourceBranchOnMerge = removeSourceBranchOnMerge;
+    }
+
     private CredentialAttributes getCredentialAttributes() {
         if (getGitLabUri() == null) {
             return null;
@@ -136,5 +144,6 @@ public class Settings implements PersistentStateComponent<Settings.State> {
 
         public boolean enableMergeRequestToFavoriteAssignee = true;
 
+        public boolean removeSourceBranchOnMerge;
     }
 }

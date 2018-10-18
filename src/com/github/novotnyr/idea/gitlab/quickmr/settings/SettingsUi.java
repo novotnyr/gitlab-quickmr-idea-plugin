@@ -51,6 +51,7 @@ public class SettingsUi implements Configurable {
     private JPanel assigneeListPlaceHolder;
     private JPanel rootPanel;
     private JCheckBox enableDefaultAssigneeActionCheckBox;
+    private JCheckBox removeSourceBranchCheckbox;
 
     private CollectionListModel<User> assigneeListModel = new CollectionListModel<>();
 
@@ -97,6 +98,7 @@ public class SettingsUi implements Configurable {
         this.mergeRequestTitleTextField.setText(settings.getDefaultTitle());
         this.assigneeListModel.replaceAll(settings.getDefaultAssignees());
         this.enableDefaultAssigneeActionCheckBox.setSelected(settings.isEnableMergeRequestToFavoriteAssignee());
+        this.removeSourceBranchCheckbox.setSelected(settings.isRemoveSourceBranchOnMerge());
     }
 
     private void onValidateServerButtonClicked(ActionEvent event) {
@@ -216,6 +218,7 @@ public class SettingsUi implements Configurable {
         settings.setDefaultAssignees(this.assigneeListModel.getItems());
         settings.setDefaultTitle(this.mergeRequestTitleTextField.getText());
         settings.setEnableMergeRequestToFavoriteAssignee(this.enableDefaultAssigneeActionCheckBox.isSelected());
+        settings.setRemoveSourceBranchOnMerge(this.removeSourceBranchCheckbox.isSelected());
     }
 
     public static class ConfigurableProvider implements VcsConfigurableProvider {

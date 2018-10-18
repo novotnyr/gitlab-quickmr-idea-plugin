@@ -83,6 +83,7 @@ public class CreateMergeRequestAction extends AnAction {
             requestRequest.setAssigneeId(this.assignee.getId());
         }
         requestRequest.setTitle(settings.getDefaultTitle());
+        requestRequest.setRemoveSourceBranch(settings.isRemoveSourceBranchOnMerge());
 
         String projectName = getProjectName(selectedModule);
 
