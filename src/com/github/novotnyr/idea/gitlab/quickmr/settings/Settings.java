@@ -1,6 +1,9 @@
 package com.github.novotnyr.idea.gitlab.quickmr.settings;
 
 import com.github.novotnyr.idea.gitlab.User;
+import com.intellij.credentialStore.CredentialAttributes;
+import com.intellij.credentialStore.Credentials;
+import com.intellij.ide.passwordSafe.PasswordSafe;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
@@ -8,9 +11,13 @@ import com.intellij.openapi.components.Storage;
 import java.util.ArrayList;
 import java.util.List;
 
-@State(name = "gitlab-quickmr", storages = @Storage("gitlab-quickmr.xml"))
+@State(name = Settings.NAME, storages = @Storage("gitlab-quickmr.xml"))
 public class Settings implements PersistentStateComponent<Settings.State> {
+    public static final String NAME = "gitlab-quickmr";
+
     private State state = new State();
+
+    private PasswordSafe passwordSafe = PasswordSafe.getInstance();
 
     @Override
     public State getState() {
@@ -24,7 +31,7 @@ public class Settings implements PersistentStateComponent<Settings.State> {
 
     public boolean isInitialized() {
         return this.state.gitLabUri != null
-                && this.state.accessToken != null
+                && this.getAccessToken() != null
                 && this.state.defaultAssignees != null && ! this.state.defaultAssignees.isEmpty()
                 && this.state.defaultTargetBranch != null
                 && this.state.defaultTitle != null;
@@ -73,11 +80,23 @@ public class Settings implements PersistentStateComponent<Settings.State> {
     }
 
     public String getAccessToken() {
-        return this.state.accessToken;
+        CredentialAttributes credentialAttributes = getCredentialAttributes();
+        if (credentialAttributes == null) {
+            return null;
+        }
+        Credentials credentials = this.passwordSafe.get(credentialAttributes);
+        if (credentials == null) {
+            return null;
+        }
+        return credentials.getPasswordAsString();
     }
 
     public void setAccessToken(String accessToken) {
-        this.state.accessToken = accessToken;
+        CredentialAttributes credentialAttributes = getCredentialAttributes();
+        if (credentialAttributes == null) {
+            return;
+        }
+        this.passwordSafe.setPassword(credentialAttributes, accessToken);
     }
 
     public String getDefaultTargetBranch() {
@@ -97,10 +116,17 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         this.state.enableMergeRequestToFavoriteAssignee = enableMergeRequestToFavoriteAssignee;
     }
 
+    private CredentialAttributes getCredentialAttributes() {
+        if (getGitLabUri() == null) {
+            return null;
+        }
+        String serviceName = NAME + "\t" + getGitLabUri();
+        String userName = getGitLabUri();
+        return new CredentialAttributes(serviceName, userName, this.getClass(), false);
+    }
+
     public static class State {
         public String gitLabUri;
-
-        public String accessToken;
 
         public List<User> defaultAssignees = new ArrayList<>();
 
