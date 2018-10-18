@@ -121,9 +121,12 @@ public class CreateMergeRequestAction extends AnAction {
 
     private void createNotification(MergeRequestResponse mergeRequestResponse, Project project, String projectName, Settings settings) {
         String message = "Merge Request created";
+        String number = mergeRequestResponse.getNumber();
+        String assignee = mergeRequestResponse.getAssignee().getName();
 
-        Notification notification = new Notification("quickmr", "Merge Request Created",
-                "Merge Request created in module <i>" + projectName + "</i> <br/><a href='mr'>View in GitLab</a>",
+        String title = "Merge Request #" + number + " Created";
+        Notification notification = new Notification("quickmr", title,
+                "Assigned in <i>" + projectName + "</i> to " + assignee + "<br/><br/><a href='mr'>View in GitLab</a>",
                 NotificationType.INFORMATION,
                 new NotificationListener() {
                     @Override
