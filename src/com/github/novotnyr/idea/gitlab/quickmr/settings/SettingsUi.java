@@ -91,7 +91,9 @@ public class SettingsUi implements Configurable {
         );
 
         this.validateServerButton.addActionListener(this::onValidateServerButtonClicked);
+    }
 
+    private void bindToComponents(Settings settings) {
         this.urlTextField.setText(settings.getGitLabUri());
         this.accessTokenTextField.setText(settings.getAccessToken());
         this.targetBranchTextField.setText(settings.getDefaultTargetBranch());
@@ -201,6 +203,13 @@ public class SettingsUi implements Configurable {
     @Override
     public boolean isModified() {
         return true;
+    }
+
+    @Override
+    public void reset() {
+        Settings settings = ServiceManager.getService(this.project, Settings.class);
+        bindToComponents(settings);
+        this.assigneeListModel.removeAll();
     }
 
     @Override

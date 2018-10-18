@@ -37,6 +37,10 @@ public class Settings implements PersistentStateComponent<Settings.State> {
                 && this.state.defaultTitle != null;
     }
 
+    public void reset() {
+        this.state = new State();
+    }
+
     public String getDefaultTitle() {
         return this.state.defaultTitle;
     }
