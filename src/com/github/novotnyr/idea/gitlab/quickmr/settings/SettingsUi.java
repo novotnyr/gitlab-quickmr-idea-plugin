@@ -36,6 +36,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SettingsUi implements Configurable {
@@ -202,14 +203,22 @@ public class SettingsUi implements Configurable {
 
     @Override
     public boolean isModified() {
-        return true;
+        Settings settings = ServiceManager.getService(this.project, Settings.class);
+
+        boolean unmodified = this.urlTextField.getText().equals(settings.getGitLabUri())
+                && Arrays.equals(this.accessTokenTextField.getPassword(), settings.getAccessToken().toCharArray())
+                && this.targetBranchTextField.getText().equals(settings.getDefaultTargetBranch())
+                && this.mergeRequestTitleTextField.getText().equals(settings.getDefaultTitle())
+                && this.enableDefaultAssigneeActionCheckBox.isSelected() == (settings.isEnableMergeRequestToFavoriteAssignee())
+                && this.removeSourceBranchCheckbox.isSelected() == (settings.isRemoveSourceBranchOnMerge());
+
+        return !unmodified;
     }
 
     @Override
     public void reset() {
         Settings settings = ServiceManager.getService(this.project, Settings.class);
         bindToComponents(settings);
-        this.assigneeListModel.removeAll();
     }
 
     @Override
