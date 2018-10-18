@@ -143,12 +143,16 @@ public class CreateMergeRequestAction extends AnAction {
     }
 
     private Void createErrorNotification(Throwable t) {
+        String title = "Merge Request Failed";
         String message = "Failed to create merge request: " + t.getMessage();
+        NotificationType notificationType = NotificationType.ERROR;
         if (t.getCause() instanceof DuplicateMergeRequestException) {
-            message = "Cannot create Merge Request: it already exists";
+            title = "Merge Request Already Exists";
+            message = "Merge Request has already been submitted";
+            notificationType = NotificationType.WARNING;
         }
 
-        Notification notification = new Notification("quickmr", "Merge Request Failed", message, NotificationType.ERROR);
+        Notification notification = new Notification("quickmr", title, message, notificationType);
 
         Notifications.Bus.notify(notification);
         return null;
