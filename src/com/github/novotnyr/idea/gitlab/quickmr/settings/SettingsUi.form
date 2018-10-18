@@ -124,7 +124,7 @@
             </constraints>
             <properties>
               <font size="10"/>
-              <text value="First Assignee is Favourite"/>
+              <text value="First Assignee is a Favourite"/>
             </properties>
           </component>
         </children>
