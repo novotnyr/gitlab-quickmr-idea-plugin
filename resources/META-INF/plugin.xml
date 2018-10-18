@@ -15,6 +15,15 @@
 
     <change-notes><![CDATA[
       <p>
+      <em>3</em>
+      <p><strong>Important!</strong> GitLab API keys are no longer
+      stored in the preferences in plain-text. You might need to reapply preferences to store the API key in the IDE password store.</p>
+      <ul>
+        <li>Support 'Remove Source Branch on Merge'</li>
+        <li>Store API keys in the IDE password store</li>
+        <li>Improve notification bubbles</li>
+      </ul>
+      <p>
       <em>2</em>
       <ul>
         <li>User interface improvements</li>
