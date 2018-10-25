@@ -17,7 +17,7 @@ public class Settings implements PersistentStateComponent<Settings.State> {
 
     private State state = new State();
 
-    private PasswordSafe passwordSafe = PasswordSafe.getInstance();
+    private PasswordSafe passwordSafe;
 
     @Override
     public State getState() {
@@ -27,6 +27,7 @@ public class Settings implements PersistentStateComponent<Settings.State> {
     @Override
     public void loadState(State state) {
         this.state = state;
+        this.passwordSafe = PasswordSafe.getInstance();
     }
 
     public boolean isInitialized() {

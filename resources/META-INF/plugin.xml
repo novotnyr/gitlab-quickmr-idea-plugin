@@ -15,6 +15,11 @@
 
     <change-notes><![CDATA[
       <p>
+      <em>4</em>
+      <ul>
+        <li>Fix infinite loading indicator in Preferences on newer IDEA versions</li>
+      </ul>
+      <p>
       <em>3</em>
       <p><strong>Important!</strong> GitLab API keys are no longer
       stored in the preferences in plain-text. You might need to reapply preferences to store the API key in the IDE password store.</p>

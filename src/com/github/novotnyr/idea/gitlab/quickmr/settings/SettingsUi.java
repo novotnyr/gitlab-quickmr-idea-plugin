@@ -36,7 +36,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class SettingsUi implements Configurable {
@@ -56,9 +55,15 @@ public class SettingsUi implements Configurable {
 
     private CollectionListModel<User> assigneeListModel = new CollectionListModel<>();
 
+    private Settings settings;
+
+    /**
+     * Cached hashcode of access token to speed up isModified()
+     */
+    private int accessTokenHashCode;
+
     public SettingsUi(Project project) {
         this.project = project;
-        Settings settings = ServiceManager.getService(this.project, Settings.class);
 
         this.urlTextField.getEmptyText().setText("https://gitlab.com/api/v4");
 
@@ -203,10 +208,8 @@ public class SettingsUi implements Configurable {
 
     @Override
     public boolean isModified() {
-        Settings settings = ServiceManager.getService(this.project, Settings.class);
-
         boolean unmodified = this.urlTextField.getText().equals(settings.getGitLabUri())
-                && Arrays.equals(this.accessTokenTextField.getPassword(), settings.getAccessToken().toCharArray())
+                && ! isAccessTokenModified()
                 && this.targetBranchTextField.getText().equals(settings.getDefaultTargetBranch())
                 && this.mergeRequestTitleTextField.getText().equals(settings.getDefaultTitle())
                 && this.enableDefaultAssigneeActionCheckBox.isSelected() == (settings.isEnableMergeRequestToFavoriteAssignee())
@@ -215,10 +218,29 @@ public class SettingsUi implements Configurable {
         return !unmodified;
     }
 
+    private boolean isAccessTokenModified() {
+        int accessTokenHash = new String(this.accessTokenTextField.getPassword()).hashCode();
+        String storedAccessToken = settings.getAccessToken();
+        if (storedAccessToken == null) {
+            storedAccessToken = "";
+        }
+        int storedAccessTokenHash = storedAccessToken.hashCode();
+        return accessTokenHash != storedAccessTokenHash;
+    }
+
     @Override
     public void reset() {
-        Settings settings = ServiceManager.getService(this.project, Settings.class);
+        this.settings = ServiceManager.getService(this.project, Settings.class);
         bindToComponents(settings);
+        cacheAccessToken();
+    }
+
+    private void cacheAccessToken() {
+        String accessToken = this.settings.getAccessToken();
+        if (accessToken == null) {
+            accessToken = "";
+        }
+        this.accessTokenHashCode = accessToken.hashCode();
     }
 
     @Override
@@ -227,8 +249,6 @@ public class SettingsUi implements Configurable {
         if (!validationErrors.isEmpty()) {
             throw new ConfigurationException("<li>" + String.join("<li>", validationErrors));
         }
-
-        Settings settings = ServiceManager.getService(this.project, Settings.class);
 
         settings.setGitLabUri(this.urlTextField.getText());
         settings.setAccessToken(String.valueOf(this.accessTokenTextField.getPassword()));
