@@ -1,6 +1,7 @@
 package com.github.novotnyr.idea.gitlab.quickmr.settings;
 
 import com.github.novotnyr.idea.gitlab.GitLab;
+import com.github.novotnyr.idea.gitlab.GitLabHttpResponseException;
 import com.github.novotnyr.idea.gitlab.User;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -22,6 +23,7 @@ import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBPasswordField;
 import com.intellij.ui.components.JBTextField;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.HttpResponseException;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,6 +39,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletionException;
 
 public class SettingsUi implements Configurable {
     private final Project project;
@@ -121,13 +124,7 @@ public class SettingsUi implements Configurable {
 
                 })
                 .exceptionally(t -> {
-                    JBPopupFactory.getInstance()
-                            .createHtmlTextBalloonBuilder("Server is not available. Please check URL or access token", MessageType.ERROR, null)
-                            .setFadeoutTime(7500)
-                            .createBalloon()
-                            .show(RelativePoint.getNorthWestOf(this.validateServerButton),
-                                    Balloon.Position.atRight);
-
+                    warnInvalidServer(t);
                     return null;
                 });
     }
@@ -153,12 +150,7 @@ public class SettingsUi implements Configurable {
                 }
         )
                 .exceptionally(t -> {
-                    JBPopupFactory.getInstance()
-                            .createHtmlTextBalloonBuilder("Server is not available. Please check URL or access token", MessageType.ERROR, null)
-                            .setFadeoutTime(7500)
-                            .createBalloon()
-                            .show(RelativePoint.getNorthWestOf(this.assigneeList),
-                                    Balloon.Position.atRight);
+                    warnInvalidServer(t);
                     return null;
                 });
     }
@@ -190,6 +182,38 @@ public class SettingsUi implements Configurable {
             validationErrors.add("Please set at least one assignee");
         }
         return validationErrors;
+    }
+
+    private void warnInvalidServer(Throwable throwable) {
+        String errorMessage = getInvalidServerErrorMessage(throwable);
+        JBPopupFactory.getInstance()
+                .createHtmlTextBalloonBuilder(errorMessage, MessageType.ERROR, null)
+                .setFadeoutTime(7500)
+                .createBalloon()
+                .show(RelativePoint.getNorthWestOf(this.assigneeList),
+                        Balloon.Position.atRight);
+    }
+
+    private String getInvalidServerErrorMessage(Throwable throwable) {
+        StringBuilder additionalErrorMessage = new StringBuilder("\n");
+        Throwable cause = throwable;
+        if (throwable instanceof CompletionException) {
+            cause = throwable.getCause();
+        }
+        if (cause instanceof HttpResponseException) {
+            HttpResponseException httpResponseException = (HttpResponseException) cause;
+            additionalErrorMessage
+                    .append("HTTP Status: ").append(httpResponseException.getStatusCode()).append("\n")
+                    .append("HTTP Reply: ").append(httpResponseException.getMessage());
+        }
+        if (cause instanceof GitLabHttpResponseException) {
+            GitLabHttpResponseException gitLabHttpResponseException = (GitLabHttpResponseException) cause;
+            additionalErrorMessage
+                    .append("HTTP Status: ").append(gitLabHttpResponseException.getStatusCode()).append("\n")
+                    .append("HTTP Reply: ").append(gitLabHttpResponseException.getMessage()).append("\n")
+                    .append("HTTP Response: ").append(gitLabHttpResponseException.getResponseBody());
+        }
+        return "Server is not available. Please check URL or access token." + additionalErrorMessage;
     }
 
     //-------
