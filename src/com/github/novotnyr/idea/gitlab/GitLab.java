@@ -65,11 +65,13 @@ public class GitLab {
 
             @Override
             public void onResponse(Response response) throws IOException {
-                String responseBodyString = response.body().string();
-                if (response.code() == 200) {
-                    result.complete(true);
-                } else {
-                    result.completeExceptionally(new GitLabHttpResponseException(response.code(), response.message(), responseBodyString));
+                try(ResponseBody body = response.body()) {
+                    String responseBodyString = body.string();
+                    if (response.code() == 200) {
+                        result.complete(true);
+                    } else {
+                        result.completeExceptionally(new GitLabHttpResponseException(response.code(), response.message(), responseBodyString));
+                    }
                 }
             }
         });

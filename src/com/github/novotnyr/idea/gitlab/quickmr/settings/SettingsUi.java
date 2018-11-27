@@ -5,6 +5,7 @@ import com.github.novotnyr.idea.gitlab.GitLabHttpResponseException;
 import com.github.novotnyr.idea.gitlab.User;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.application.ex.ApplicationManagerEx;
 import com.intellij.openapi.components.ServiceManager;
@@ -150,7 +151,7 @@ public class SettingsUi implements Configurable {
                 }
         )
                 .exceptionally(t -> {
-                    warnInvalidServer(t);
+                    ApplicationManager.getApplication().invokeLater(() -> warnInvalidServer(t));
                     return null;
                 });
     }
@@ -190,7 +191,7 @@ public class SettingsUi implements Configurable {
                 .createHtmlTextBalloonBuilder(errorMessage, MessageType.ERROR, null)
                 .setFadeoutTime(7500)
                 .createBalloon()
-                .show(RelativePoint.getNorthWestOf(this.assigneeList),
+                .show(RelativePoint.getNorthWestOf(this.validateServerButton),
                         Balloon.Position.atRight);
     }
 
@@ -208,10 +209,14 @@ public class SettingsUi implements Configurable {
         }
         if (cause instanceof GitLabHttpResponseException) {
             GitLabHttpResponseException gitLabHttpResponseException = (GitLabHttpResponseException) cause;
+            String responseBody = gitLabHttpResponseException.getResponseBody();
+            if (gitLabHttpResponseException.getStatusCode() == 404) {
+                responseBody = "Server URL must end with /api/v4. Example: http://gitlab.com/api/v4";
+            }
             additionalErrorMessage
                     .append("HTTP Status: ").append(gitLabHttpResponseException.getStatusCode()).append("\n")
                     .append("HTTP Reply: ").append(gitLabHttpResponseException.getMessage()).append("\n")
-                    .append("HTTP Response: ").append(gitLabHttpResponseException.getResponseBody());
+                    .append("HTTP Response: ").append(responseBody);
         }
         return "Server is not available. Please check URL or access token." + additionalErrorMessage;
     }
