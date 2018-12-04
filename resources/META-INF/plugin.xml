@@ -15,6 +15,12 @@
 
     <change-notes><![CDATA[
       <p>
+      <em>5</em>
+      <ul>
+        <li>Treat assignees as optional. Now you can create merge requests without any assignees</li>
+        <li>Clarify GitLab URL format and validation in Settings</li>
+      </ul>
+      <p>
       <em>4</em>
       <ul>
         <li>Fix infinite loading indicator in Preferences on newer IDEA versions</li>
