@@ -129,6 +129,14 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         this.state.removeSourceBranchOnMerge = removeSourceBranchOnMerge;
     }
 
+    public boolean isAssigneesEnabled() {
+        return this.state.assigneesEnabled;
+    }
+
+    public void setAssigneesEnabled(boolean assigneesEnabled) {
+        this.state.assigneesEnabled = assigneesEnabled;
+    }
+
     private CredentialAttributes getCredentialAttributes() {
         if (getGitLabUri() == null) {
             return null;
@@ -150,5 +158,8 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         public boolean enableMergeRequestToFavoriteAssignee = true;
 
         public boolean removeSourceBranchOnMerge;
+
+        public boolean assigneesEnabled = true;
+
     }
 }

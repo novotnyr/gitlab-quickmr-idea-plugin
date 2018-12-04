@@ -26,6 +26,7 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 public class CreateMergeRequestAction extends AnAction {
     private User assignee;
@@ -74,13 +75,22 @@ public class CreateMergeRequestAction extends AnAction {
 
         GitLab gitLab = new GitLab(settings.getGitLabUri(), settings.getAccessToken());
 
+        String sourceBranch = getSourceBranch(selectedModule);
+        String targetBranch = settings.getDefaultTargetBranch();
+        if (Objects.equals(sourceBranch, targetBranch)) {
+            this.createErrorNotification(new IllegalStateException("Source branch (" + sourceBranch + ") and target branch must be different"));
+            return;
+        }
+
         MergeRequestRequest requestRequest = new MergeRequestRequest();
-        requestRequest.setSourceBranch(getSourceBranch(selectedModule));
-        requestRequest.setTargetBranch(settings.getDefaultTargetBranch());
-        if (this.assignee == null) {
-            requestRequest.setAssigneeId(settings.getDefaultAssigneeId());
-        } else {
-            requestRequest.setAssigneeId(this.assignee.getId());
+        requestRequest.setSourceBranch(sourceBranch);
+        requestRequest.setTargetBranch(targetBranch);
+        if (settings.isAssigneesEnabled()) {
+            if (this.assignee == null) {
+                requestRequest.setAssigneeId(settings.getDefaultAssigneeId());
+            } else {
+                requestRequest.setAssigneeId(this.assignee.getId());
+            }
         }
         requestRequest.setTitle(settings.getDefaultTitle());
         requestRequest.setRemoveSourceBranch(settings.isRemoveSourceBranchOnMerge());
@@ -89,7 +99,7 @@ public class CreateMergeRequestAction extends AnAction {
 
         gitLab.createMergeRequest(projectName, requestRequest)
                 .thenAccept(mergeRequestResponse -> createNotification(mergeRequestResponse, project, projectName, settings))
-                .exceptionally(t -> createErrorNotification(t));
+                .exceptionally(this::createErrorNotification);
     }
 
     @Override
@@ -121,13 +131,18 @@ public class CreateMergeRequestAction extends AnAction {
     }
 
     private void createNotification(MergeRequestResponse mergeRequestResponse, Project project, String projectName, Settings settings) {
-        String message = "Merge Request created";
         String number = mergeRequestResponse.getNumber();
-        String assignee = mergeRequestResponse.getAssignee().getName();
+        String assignee = mergeRequestResponse.getAssigneeName();
+        String assigneeMessage;
+        if (assignee != null) {
+            assigneeMessage = "Assigned in <i>" + projectName + "</i> to " + assignee + "<br/><br/>";
+        } else {
+            assigneeMessage = "Created in <i>" + projectName + "</i><br/><br/>";
+        }
 
         String title = "Merge Request #" + number + " Created";
         Notification notification = new Notification("quickmr", title,
-                "Assigned in <i>" + projectName + "</i> to " + assignee + "<br/><br/><a href='mr'>View in GitLab</a>",
+                assigneeMessage + "<a href='mr'>View in GitLab</a>",
                 NotificationType.INFORMATION,
                 new NotificationListener() {
                     @Override

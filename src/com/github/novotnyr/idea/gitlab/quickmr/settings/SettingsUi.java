@@ -38,6 +38,7 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletionException;
@@ -56,6 +57,7 @@ public class SettingsUi implements Configurable {
     private JPanel rootPanel;
     private JCheckBox enableDefaultAssigneeActionCheckBox;
     private JCheckBox removeSourceBranchCheckbox;
+    private JCheckBox enableAssigneesCheckBox;
 
     private CollectionListModel<User> assigneeListModel = new CollectionListModel<>();
 
@@ -101,6 +103,8 @@ public class SettingsUi implements Configurable {
         );
 
         this.validateServerButton.addActionListener(this::onValidateServerButtonClicked);
+
+        this.enableAssigneesCheckBox.addItemListener(this::onDisableAssigneesItemStateChanged);
     }
 
     private void bindToComponents(Settings settings) {
@@ -111,6 +115,8 @@ public class SettingsUi implements Configurable {
         this.assigneeListModel.replaceAll(settings.getDefaultAssignees());
         this.enableDefaultAssigneeActionCheckBox.setSelected(settings.isEnableMergeRequestToFavoriteAssignee());
         this.removeSourceBranchCheckbox.setSelected(settings.isRemoveSourceBranchOnMerge());
+        this.enableAssigneesCheckBox.setSelected(settings.isAssigneesEnabled());
+        this.assigneeList.setEnabled(settings.isAssigneesEnabled());
     }
 
     private void onValidateServerButtonClicked(ActionEvent event) {
@@ -128,6 +134,18 @@ public class SettingsUi implements Configurable {
                     warnInvalidServer(t);
                     return null;
                 });
+    }
+
+
+    private void onDisableAssigneesItemStateChanged(ItemEvent event) {
+        switch (event.getStateChange()) {
+            case ItemEvent.SELECTED:
+                this.assigneeList.setEnabled(true);
+                break;
+            case ItemEvent.DESELECTED:
+                this.assigneeList.setEnabled(false);
+                break;
+        }
     }
 
     public JPanel getRootPanel() {
@@ -179,7 +197,7 @@ public class SettingsUi implements Configurable {
             validationErrors.add("Missing default Merge Request title");
         }
 
-        if (this.assigneeListModel == null || this.assigneeListModel.isEmpty()) {
+        if (this.enableAssigneesCheckBox.isEnabled() && (this.assigneeListModel == null || this.assigneeListModel.isEmpty())) {
             validationErrors.add("Please set at least one assignee");
         }
         return validationErrors;
@@ -242,6 +260,7 @@ public class SettingsUi implements Configurable {
                 && this.targetBranchTextField.getText().equals(settings.getDefaultTargetBranch())
                 && this.mergeRequestTitleTextField.getText().equals(settings.getDefaultTitle())
                 && this.enableDefaultAssigneeActionCheckBox.isSelected() == (settings.isEnableMergeRequestToFavoriteAssignee())
+                && this.enableAssigneesCheckBox.isSelected() == (settings.isAssigneesEnabled())
                 && this.removeSourceBranchCheckbox.isSelected() == (settings.isRemoveSourceBranchOnMerge());
 
         return !unmodified;
@@ -286,6 +305,7 @@ public class SettingsUi implements Configurable {
         settings.setDefaultTitle(this.mergeRequestTitleTextField.getText());
         settings.setEnableMergeRequestToFavoriteAssignee(this.enableDefaultAssigneeActionCheckBox.isSelected());
         settings.setRemoveSourceBranchOnMerge(this.removeSourceBranchCheckbox.isSelected());
+        settings.setAssigneesEnabled(this.enableAssigneesCheckBox.isSelected());
     }
 
     public static class ConfigurableProvider implements VcsConfigurableProvider {
@@ -294,5 +314,4 @@ public class SettingsUi implements Configurable {
             return new SettingsUi(project);
         }
     }
-
 }

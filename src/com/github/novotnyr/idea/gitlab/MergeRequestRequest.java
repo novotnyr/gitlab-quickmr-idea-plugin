@@ -12,7 +12,7 @@ public class MergeRequestRequest {
     private String title;
 
     @SerializedName("assignee_id")
-    private long assigneeId;
+    private Long assigneeId;
 
     @SerializedName("remove_source_branch")
     private boolean removeSourceBranch;
@@ -41,11 +41,11 @@ public class MergeRequestRequest {
         this.title = title;
     }
 
-    public long getAssigneeId() {
+    public Long getAssigneeId() {
         return assigneeId;
     }
 
-    public void setAssigneeId(long assigneeId) {
+    public void setAssigneeId(Long assigneeId) {
         this.assigneeId = assigneeId;
     }
 

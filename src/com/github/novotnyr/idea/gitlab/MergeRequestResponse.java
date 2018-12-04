@@ -53,6 +53,13 @@ public class MergeRequestResponse {
         return assignee;
     }
 
+    public String getAssigneeName() {
+        if (this.assignee == null) {
+            return null;
+        }
+        return this.assignee.getName();
+    }
+
     public void setAssignee(User assignee) {
         this.assignee = assignee;
     }

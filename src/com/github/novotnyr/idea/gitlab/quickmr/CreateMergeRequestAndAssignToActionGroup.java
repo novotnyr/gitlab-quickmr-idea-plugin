@@ -39,4 +39,14 @@ public class CreateMergeRequestAndAssignToActionGroup extends ActionGroup {
         }
         return actions.toArray(new AnAction[0]);
     }
+
+    @Override
+    public void update(AnActionEvent e) {
+        Project project = e.getProject();
+        if (project == null) {
+            return;
+        }
+        Settings settings = ServiceManager.getService(project, Settings.class);
+        e.getPresentation().setVisible(settings.isAssigneesEnabled());
+    }
 }
