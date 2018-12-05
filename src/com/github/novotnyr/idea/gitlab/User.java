@@ -11,6 +11,10 @@ public class User {
         // empty constructor
     }
 
+    public User(long id) {
+        this.id = id;
+    }
+
     public long getId() {
         return id;
     }

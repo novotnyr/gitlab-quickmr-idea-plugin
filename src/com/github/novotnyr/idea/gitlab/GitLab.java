@@ -207,9 +207,9 @@ public class GitLab {
         return result.thenApply(users -> users.get(0));
     }
 
-    public CompletableFuture<MergeRequestResponse> createMergeRequest(String projectId, MergeRequestRequest mergeRequestRequest) {
+    public CompletableFuture<MergeRequestResponse> createMergeRequest(String gitLabProjectId, MergeRequestRequest mergeRequestRequest) {
         try {
-            String urlEncodedProjectId = URLEncoder.encode(projectId, "UTF-8");
+            String urlEncodedProjectId = URLEncoder.encode(gitLabProjectId, "UTF-8");
             return doCreateMergeRequest(urlEncodedProjectId, mergeRequestRequest);
         } catch (UnsupportedEncodingException e) {
             throw new IllegalArgumentException("Unable to url encode input", e);

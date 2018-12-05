@@ -2,8 +2,6 @@ package com.github.novotnyr.idea.gitlab.quickmr;
 
 import com.github.novotnyr.idea.git.GitService;
 import com.github.novotnyr.idea.gitlab.DuplicateMergeRequestException;
-import com.github.novotnyr.idea.gitlab.GitLab;
-import com.github.novotnyr.idea.gitlab.MergeRequestRequest;
 import com.github.novotnyr.idea.gitlab.MergeRequestResponse;
 import com.github.novotnyr.idea.gitlab.User;
 import com.github.novotnyr.idea.gitlab.quickmr.settings.Settings;
@@ -26,7 +24,6 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Objects;
 
 public class CreateMergeRequestAction extends AnAction {
     private User assignee;
@@ -57,7 +54,22 @@ public class CreateMergeRequestAction extends AnAction {
 
         Project project = event.getProject();
         Settings settings = ServiceManager.getService(project, Settings.class);
-        if (!settings.isInitialized()) {
+
+        try {
+            String gitLabProjectId = getProjectName(selectedModule);
+            MergeRequestService mergeRequestService = new MergeRequestService(this.gitService);
+            NewMergeRequest mergeRequest = new NewMergeRequest();
+            mergeRequest.setAssignee(this.assignee);
+            mergeRequest.setGitLabProjectId(gitLabProjectId);
+            mergeRequest.setSourceBranch(getSourceBranch(selectedModule));
+
+            mergeRequestService.createMergeRequest(mergeRequest, settings)
+                    .thenAccept(mergeRequestResponse -> createNotification(mergeRequestResponse, project, gitLabProjectId, settings))
+                    .exceptionally(this::createErrorNotification);
+
+        } catch (SourceAndTargetBranchCannotBeEqualException e) {
+            this.createErrorNotification(e);
+        } catch (SettingsNotInitializedException e) {
             Notification notification = new Notification("quickmr", "Quick Merge Request are not configured",
                     "Quick Merge Requests are not configured<br/> <a href='link'>Configure</a>",
                     NotificationType.INFORMATION,
@@ -70,36 +82,7 @@ public class CreateMergeRequestAction extends AnAction {
                     }
             );
             Notifications.Bus.notify(notification);
-            return;
         }
-
-        GitLab gitLab = new GitLab(settings.getGitLabUri(), settings.getAccessToken());
-
-        String sourceBranch = getSourceBranch(selectedModule);
-        String targetBranch = settings.getDefaultTargetBranch();
-        if (Objects.equals(sourceBranch, targetBranch)) {
-            this.createErrorNotification(new IllegalStateException("Source branch (" + sourceBranch + ") and target branch must be different"));
-            return;
-        }
-
-        MergeRequestRequest requestRequest = new MergeRequestRequest();
-        requestRequest.setSourceBranch(sourceBranch);
-        requestRequest.setTargetBranch(targetBranch);
-        if (settings.isAssigneesEnabled()) {
-            if (this.assignee == null) {
-                requestRequest.setAssigneeId(settings.getDefaultAssigneeId());
-            } else {
-                requestRequest.setAssigneeId(this.assignee.getId());
-            }
-        }
-        requestRequest.setTitle(settings.getDefaultTitle());
-        requestRequest.setRemoveSourceBranch(settings.isRemoveSourceBranchOnMerge());
-
-        String projectName = getProjectName(selectedModule);
-
-        gitLab.createMergeRequest(projectName, requestRequest)
-                .thenAccept(mergeRequestResponse -> createNotification(mergeRequestResponse, project, projectName, settings))
-                .exceptionally(this::createErrorNotification);
     }
 
     @Override

@@ -31,11 +31,14 @@ public class Settings implements PersistentStateComponent<Settings.State> {
     }
 
     public boolean isInitialized() {
-        return this.state.gitLabUri != null
+        boolean initialized = this.state.gitLabUri != null
                 && this.getAccessToken() != null
-                && this.state.defaultAssignees != null && ! this.state.defaultAssignees.isEmpty()
                 && this.state.defaultTargetBranch != null
                 && this.state.defaultTitle != null;
+        if(this.state.assigneesEnabled) {
+            return initialized && (this.state.defaultAssignees != null && !this.state.defaultAssignees.isEmpty());
+        }
+        return initialized;
     }
 
     public void reset() {
@@ -144,6 +147,10 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         String serviceName = NAME + "\t" + getGitLabUri();
         String userName = getGitLabUri();
         return new CredentialAttributes(serviceName, userName, this.getClass(), false);
+    }
+
+    public void setPasswordSafe(PasswordSafe passwordSafe) {
+        this.passwordSafe = passwordSafe;
     }
 
     public static class State {
