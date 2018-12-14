@@ -46,12 +46,17 @@ public class JsonHttpResponseCallback<T> implements Callback {
     public void onResponse(Response response) throws IOException {
         try(ResponseBody body = response.body()) {
             String json = response.body().string();
+            onRawResponseBody(response, json);
             Type typeToken = new TypeToken<T>(){}.getType();
             T deserializedJson = this.gson.fromJson(json, typeToken);
             result.complete(handleResponse(response, body, json, deserializedJson));
         } catch (JsonSyntaxException e) {
             result.completeExceptionally(e);
         }
+    }
+
+    protected void onRawResponseBody(Response response, String rawResponseBodyString) {
+        // do nothing
     }
 
     protected T handleResponse(Response response, ResponseBody body, String json, T object) {

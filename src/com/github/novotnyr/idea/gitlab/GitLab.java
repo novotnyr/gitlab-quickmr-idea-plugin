@@ -2,7 +2,6 @@ package com.github.novotnyr.idea.gitlab;
 
 import com.google.gson.Gson;
 import com.squareup.okhttp.Call;
-import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -39,43 +38,27 @@ public class GitLab {
         this.httpClient = new OkHttpClient();
     }
 
-    public CompletableFuture<Boolean> version() {
-        CompletableFuture<Boolean> result = new CompletableFuture<>();
-
+    public CompletableFuture<VersionResponse> version() {
         String url = this.baseUri + "/version";
 
+        CompletableFuture<VersionResponse> result = new CompletableFuture<>();
         if (HttpUrl.parse(url) == null) {
             result.completeExceptionally(new HttpResponseException(500, "Incorrect GitLab URL"));
             return result;
         }
 
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Private-Token", this.privateToken)
-                .get()
-                .build();
-
-
-        Call call = httpClient.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                result.completeExceptionally(e);
-            }
-
-            @Override
-            public void onResponse(Response response) throws IOException {
-                try(ResponseBody body = response.body()) {
-                    String responseBodyString = body.string();
-                    if (response.code() == 200) {
-                        result.complete(true);
-                    } else {
-                        result.completeExceptionally(new GitLabHttpResponseException(response.code(), response.message(), responseBodyString));
+        Request request = prepareRequest("/version").build();
+        this.httpClient.newCall(request)
+                .enqueue(new JsonHttpResponseCallback<VersionResponse>(VersionResponse.class, result, this.gson) {
+                    @Override
+                    protected void onRawResponseBody(Response response, String rawResponseBodyString) {
+                        if (response.code() != 200) {
+                            result.completeExceptionally(new GitLabHttpResponseException(response.code(), response.message(), rawResponseBodyString));
+                        } else {
+                            super.onRawResponseBody(response, rawResponseBodyString);
+                        }
                     }
-                }
-            }
-        });
-
+                });
         return result;
     }
 

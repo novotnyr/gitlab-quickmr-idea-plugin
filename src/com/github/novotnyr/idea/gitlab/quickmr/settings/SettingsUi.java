@@ -3,6 +3,7 @@ package com.github.novotnyr.idea.gitlab.quickmr.settings;
 import com.github.novotnyr.idea.gitlab.GitLab;
 import com.github.novotnyr.idea.gitlab.GitLabHttpResponseException;
 import com.github.novotnyr.idea.gitlab.User;
+import com.google.gson.JsonSyntaxException;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
@@ -197,7 +198,7 @@ public class SettingsUi implements Configurable {
             validationErrors.add("Missing default Merge Request title");
         }
 
-        if (this.enableAssigneesCheckBox.isEnabled() && (this.assigneeListModel == null || this.assigneeListModel.isEmpty())) {
+        if (this.enableAssigneesCheckBox.isSelected() && (this.assigneeListModel == null || this.assigneeListModel.isEmpty())) {
             validationErrors.add("Please set at least one assignee");
         }
         return validationErrors;
@@ -214,10 +215,17 @@ public class SettingsUi implements Configurable {
     }
 
     private String getInvalidServerErrorMessage(Throwable throwable) {
+        String defaultErrorMessage = "GitLab is not available. Please check URL or access token.";
         StringBuilder additionalErrorMessage = new StringBuilder("\n");
         Throwable cause = throwable;
         if (throwable instanceof CompletionException) {
             cause = throwable.getCause();
+        }
+        if (cause instanceof JsonSyntaxException) {
+            defaultErrorMessage = "";
+            additionalErrorMessage.setLength(0);
+            additionalErrorMessage.append("This is not a valid GitLab V4 REST API URL\nServer URL must end with /api/v4. Example: http://gitlab.com/api/v4");
+
         }
         if (cause instanceof HttpResponseException) {
             HttpResponseException httpResponseException = (HttpResponseException) cause;
@@ -236,7 +244,7 @@ public class SettingsUi implements Configurable {
                     .append("HTTP Reply: ").append(gitLabHttpResponseException.getMessage()).append("\n")
                     .append("HTTP Response: ").append(responseBody);
         }
-        return "Server is not available. Please check URL or access token." + additionalErrorMessage;
+        return defaultErrorMessage + additionalErrorMessage;
     }
 
     //-------
@@ -255,10 +263,10 @@ public class SettingsUi implements Configurable {
 
     @Override
     public boolean isModified() {
-        boolean unmodified = this.urlTextField.getText().equals(settings.getGitLabUri())
-                && ! isAccessTokenModified()
-                && this.targetBranchTextField.getText().equals(settings.getDefaultTargetBranch())
-                && this.mergeRequestTitleTextField.getText().equals(settings.getDefaultTitle())
+        boolean unmodified = SettingUtils.equals(this.urlTextField, settings.getGitLabUri())
+                && !isAccessTokenModified()
+                && SettingUtils.equals(this.targetBranchTextField, settings.getDefaultTargetBranch())
+                && SettingUtils.equals(this.mergeRequestTitleTextField, settings.getDefaultTitle())
                 && this.enableDefaultAssigneeActionCheckBox.isSelected() == (settings.isEnableMergeRequestToFavoriteAssignee())
                 && this.enableAssigneesCheckBox.isSelected() == (settings.isAssigneesEnabled())
                 && this.removeSourceBranchCheckbox.isSelected() == (settings.isRemoveSourceBranchOnMerge());
