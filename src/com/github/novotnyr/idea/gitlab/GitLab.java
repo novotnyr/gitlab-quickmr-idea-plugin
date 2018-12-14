@@ -10,6 +10,7 @@ import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
 import com.squareup.okhttp.internal.Util;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpResponseException;
 
 import java.io.IOException;
@@ -240,5 +241,16 @@ public class GitLab {
         return new Request.Builder()
                 .url(this.baseUri + urlSuffix)
                 .addHeader("Private-Token", this.privateToken);
+    }
+
+    public static String getBaseUrl(String gitLabRestApiUrl) {
+        String url = gitLabRestApiUrl;
+        url = StringUtils.removeEnd(url, "/");
+        url = StringUtils.removeEnd(url, "/api/v4");
+        return url;
+    }
+
+    public static String getAccessTokenWebPageUrl(String gitLabBaseUrl) {
+        return gitLabBaseUrl + "/profile/personal_access_tokens";
     }
 }

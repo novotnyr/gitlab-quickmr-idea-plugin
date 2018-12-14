@@ -3,8 +3,10 @@ package com.github.novotnyr.idea.gitlab.quickmr.settings;
 import com.github.novotnyr.idea.gitlab.GitLab;
 import com.github.novotnyr.idea.gitlab.GitLabHttpResponseException;
 import com.github.novotnyr.idea.gitlab.User;
+import com.github.novotnyr.idea.gitlab.quickmr.IllegalGitLabUrlException;
 import com.google.gson.JsonSyntaxException;
 import com.intellij.icons.AllIcons;
+import com.intellij.ide.browsers.BrowserLauncher;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
@@ -24,6 +26,7 @@ import com.intellij.ui.awt.RelativePoint;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBPasswordField;
 import com.intellij.ui.components.JBTextField;
+import com.squareup.okhttp.HttpUrl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpResponseException;
 import org.jetbrains.annotations.Nls;
@@ -40,12 +43,14 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletionException;
 
 public class SettingsUi implements Configurable {
     private final Project project;
+    private final BrowserLauncher browserLauncher;
 
     private JBTextField urlTextField;
     private JBPasswordField accessTokenTextField;
@@ -59,10 +64,13 @@ public class SettingsUi implements Configurable {
     private JCheckBox enableDefaultAssigneeActionCheckBox;
     private JCheckBox removeSourceBranchCheckbox;
     private JCheckBox enableAssigneesCheckBox;
+    private JButton openAccessTokenUrlButton;
 
     private CollectionListModel<User> assigneeListModel = new CollectionListModel<>();
 
     private Settings settings;
+
+    private boolean serverUrlValidated = true;
 
     /**
      * Cached hashcode of access token to speed up isModified()
@@ -71,6 +79,7 @@ public class SettingsUi implements Configurable {
 
     public SettingsUi(Project project) {
         this.project = project;
+        this.browserLauncher = BrowserLauncher.getInstance();
 
         this.urlTextField.getEmptyText().setText("https://gitlab.com/api/v4");
 
@@ -106,6 +115,8 @@ public class SettingsUi implements Configurable {
         this.validateServerButton.addActionListener(this::onValidateServerButtonClicked);
 
         this.enableAssigneesCheckBox.addItemListener(this::onDisableAssigneesItemStateChanged);
+
+        this.openAccessTokenUrlButton.addActionListener(this::onOpenAccessTokenUrlButtonClicked);
     }
 
     private void bindToComponents(Settings settings) {
@@ -121,6 +132,11 @@ public class SettingsUi implements Configurable {
     }
 
     private void onValidateServerButtonClicked(ActionEvent event) {
+        if (StringUtils.isEmpty(this.urlTextField.getText())) {
+            warnInvalidServer(new IllegalGitLabUrlException("GitLab URL cannot be empty"));
+            return;
+        }
+
         GitLab gitLab = new GitLab(this.urlTextField.getText(), String.valueOf(accessTokenTextField.getPassword()));
                 gitLab.version().thenRun(() -> {
                     JBPopupFactory.getInstance()
@@ -151,6 +167,17 @@ public class SettingsUi implements Configurable {
 
     public JPanel getRootPanel() {
         return rootPanel;
+    }
+
+    private void onOpenAccessTokenUrlButtonClicked(ActionEvent e) {
+        String url = this.urlTextField.getText();
+        if (HttpUrl.parse(url) == null) {
+            warnInvalidServer(new IllegalGitLabUrlException("Incorrect format of GitLab URL"));
+        } else {
+            String baseUrl = GitLab.getBaseUrl(url);
+            String accessTokenUrl = GitLab.getAccessTokenWebPageUrl(baseUrl);
+            this.browserLauncher.browse(URI.create(accessTokenUrl));
+        }
     }
 
     //-------
@@ -221,11 +248,15 @@ public class SettingsUi implements Configurable {
         if (throwable instanceof CompletionException) {
             cause = throwable.getCause();
         }
+        if (cause instanceof IllegalGitLabUrlException) {
+            defaultErrorMessage = "";
+            additionalErrorMessage.setLength(0);
+            additionalErrorMessage.append(cause.getMessage());
+        }
         if (cause instanceof JsonSyntaxException) {
             defaultErrorMessage = "";
             additionalErrorMessage.setLength(0);
             additionalErrorMessage.append("This is not a valid GitLab V4 REST API URL\nServer URL must end with /api/v4. Example: http://gitlab.com/api/v4");
-
         }
         if (cause instanceof HttpResponseException) {
             HttpResponseException httpResponseException = (HttpResponseException) cause;
