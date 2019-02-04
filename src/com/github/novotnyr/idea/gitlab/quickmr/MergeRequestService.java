@@ -34,10 +34,18 @@ public class MergeRequestService {
         request.setSourceBranch(sourceBranch);
         request.setTargetBranch(targetBranch);
         setAssignee(request, newMergeRequest, settings);
-        request.setTitle(settings.getDefaultTitle());
+        setTitle(request, newMergeRequest, settings);
         request.setRemoveSourceBranch(settings.isRemoveSourceBranchOnMerge());
 
         return gitLab.createMergeRequest(newMergeRequest.getGitLabProjectId(), request);
+    }
+
+    private void setTitle(MergeRequestRequest request, NewMergeRequest newMergeRequest, Settings settings) {
+        String templateTitle = settings.getDefaultTitle();
+        templateTitle = templateTitle.replaceAll("{{sourceBranch}}", newMergeRequest.getSourceBranch());
+        templateTitle = templateTitle.replaceAll("{{targetBranch}}", settings.getDefaultTargetBranch());
+
+        request.setTitle(templateTitle);
     }
 
     private void setAssignee(MergeRequestRequest request, NewMergeRequest newMergeRequest, Settings settings) {
