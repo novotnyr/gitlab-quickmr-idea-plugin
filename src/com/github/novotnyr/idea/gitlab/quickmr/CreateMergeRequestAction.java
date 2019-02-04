@@ -2,6 +2,7 @@ package com.github.novotnyr.idea.gitlab.quickmr;
 
 import com.github.novotnyr.idea.git.GitService;
 import com.github.novotnyr.idea.gitlab.DuplicateMergeRequestException;
+import com.github.novotnyr.idea.gitlab.MergeRequestRequest;
 import com.github.novotnyr.idea.gitlab.MergeRequestResponse;
 import com.github.novotnyr.idea.gitlab.User;
 import com.github.novotnyr.idea.gitlab.quickmr.settings.Settings;
@@ -63,7 +64,13 @@ public class CreateMergeRequestAction extends AnAction {
             mergeRequest.setGitLabProjectId(gitLabProjectId);
             mergeRequest.setSourceBranch(getSourceBranch(selectedModule));
 
-            mergeRequestService.createMergeRequest(mergeRequest, settings)
+            MergeRequestRequest request = mergeRequestService.prepare(mergeRequest, settings);
+
+            if (!isAcceptedByUser(request)) {
+                return;
+            }
+
+            mergeRequestService.submit(mergeRequest.getGitLabProjectId(), request, settings)
                     .thenAccept(mergeRequestResponse -> createNotification(mergeRequestResponse, project, gitLabProjectId, settings))
                     .exceptionally(this::createErrorNotification);
 
@@ -83,6 +90,11 @@ public class CreateMergeRequestAction extends AnAction {
             );
             Notifications.Bus.notify(notification);
         }
+    }
+
+    private boolean isAcceptedByUser(MergeRequestRequest request) {
+        ConfirmMergeRequestDialog dialog = new ConfirmMergeRequestDialog(request);
+        return dialog.showAndGet();
     }
 
     @Override

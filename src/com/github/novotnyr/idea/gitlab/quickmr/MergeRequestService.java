@@ -17,12 +17,10 @@ public class MergeRequestService {
         this.gitService = gitService;
     }
 
-    public CompletableFuture<MergeRequestResponse> createMergeRequest(NewMergeRequest newMergeRequest, Settings settings) throws SourceAndTargetBranchCannotBeEqualException, SettingsNotInitializedException {
+    public MergeRequestRequest prepare(NewMergeRequest newMergeRequest, Settings settings) throws SourceAndTargetBranchCannotBeEqualException {
         if (!settings.isInitialized()) {
             throw new SettingsNotInitializedException();
         }
-
-        GitLab gitLab = createGitLab(settings);
 
         String sourceBranch = newMergeRequest.getSourceBranch();
         String targetBranch = settings.getDefaultTargetBranch();
@@ -36,14 +34,23 @@ public class MergeRequestService {
         setAssignee(request, newMergeRequest, settings);
         setTitle(request, newMergeRequest, settings);
         request.setRemoveSourceBranch(settings.isRemoveSourceBranchOnMerge());
+        return request;
+    }
 
-        return gitLab.createMergeRequest(newMergeRequest.getGitLabProjectId(), request);
+    public CompletableFuture<MergeRequestResponse> submit(String gitLabProjectId, MergeRequestRequest mergeRequestRequest, Settings settings) throws SourceAndTargetBranchCannotBeEqualException {
+        GitLab gitLab = createGitLab(settings);
+        return gitLab.createMergeRequest(gitLabProjectId, mergeRequestRequest);
+    }
+
+    public CompletableFuture<MergeRequestResponse> createMergeRequest(NewMergeRequest newMergeRequest, Settings settings) throws SourceAndTargetBranchCannotBeEqualException, SettingsNotInitializedException {
+        MergeRequestRequest request = prepare(newMergeRequest, settings);
+        return submit(newMergeRequest.getGitLabProjectId(), request, settings);
     }
 
     private void setTitle(MergeRequestRequest request, NewMergeRequest newMergeRequest, Settings settings) {
         String templateTitle = settings.getDefaultTitle();
-        templateTitle = templateTitle.replaceAll("{{sourceBranch}}", newMergeRequest.getSourceBranch());
-        templateTitle = templateTitle.replaceAll("{{targetBranch}}", settings.getDefaultTargetBranch());
+        templateTitle = templateTitle.replaceAll("\\{\\{sourceBranch}}", newMergeRequest.getSourceBranch());
+        templateTitle = templateTitle.replaceAll("\\{\\{targetBranch}}", settings.getDefaultTargetBranch());
 
         request.setTitle(templateTitle);
     }
