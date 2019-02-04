@@ -17,6 +17,13 @@
       <p>
       <em>6</em>
       <ul>
+        <li>Allow placeholders for source branch and target branch in the Merge Request title</li>
+        <li>Allow optional confirmation dialog before Merge Request submission</li>
+      </ul>
+      </p>
+      <p>
+      <em>6</em>
+      <ul>
         <li>Add <em>Access Token</em> button to conveniently open GitLab token management webpage</li>
         <li>GitLab URL handling Fixes</li>
       </ul>
