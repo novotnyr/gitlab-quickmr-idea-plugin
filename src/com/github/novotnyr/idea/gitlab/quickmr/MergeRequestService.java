@@ -33,6 +33,14 @@ public class MergeRequestService {
         MergeRequestRequest request = new MergeRequestRequest();
         request.setSourceBranch(sourceBranch);
         request.setTargetBranch(targetBranch);
+        setAssignee(request, newMergeRequest, settings);
+        request.setTitle(settings.getDefaultTitle());
+        request.setRemoveSourceBranch(settings.isRemoveSourceBranchOnMerge());
+
+        return gitLab.createMergeRequest(newMergeRequest.getGitLabProjectId(), request);
+    }
+
+    private void setAssignee(MergeRequestRequest request, NewMergeRequest newMergeRequest, Settings settings) {
         if (settings.isAssigneesEnabled()) {
             if (newMergeRequest.getAssignee() == null) {
                 request.setAssigneeId(settings.getDefaultAssigneeId());
@@ -40,10 +48,6 @@ public class MergeRequestService {
                 request.setAssigneeId(newMergeRequest.getAssignee().getId());
             }
         }
-        request.setTitle(settings.getDefaultTitle());
-        request.setRemoveSourceBranch(settings.isRemoveSourceBranchOnMerge());
-
-        return gitLab.createMergeRequest(newMergeRequest.getGitLabProjectId(), request);
     }
 
     @NotNull
