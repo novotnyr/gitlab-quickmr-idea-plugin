@@ -140,6 +140,14 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         this.state.assigneesEnabled = assigneesEnabled;
     }
 
+    public boolean isShowConfirmationDialog() {
+        return this.state.showConfirmationDialog;
+    }
+
+    public void setShowConfirmationDialog(boolean showConfirmationDialog) {
+        this.state.showConfirmationDialog = showConfirmationDialog;
+    }
+
     private CredentialAttributes getCredentialAttributes() {
         if (getGitLabUri() == null) {
             return null;
@@ -167,6 +175,8 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         public boolean removeSourceBranchOnMerge;
 
         public boolean assigneesEnabled = true;
+
+        public boolean showConfirmationDialog = false;
 
     }
 }

@@ -65,11 +65,9 @@ public class CreateMergeRequestAction extends AnAction {
             mergeRequest.setSourceBranch(getSourceBranch(selectedModule));
 
             MergeRequestRequest request = mergeRequestService.prepare(mergeRequest, settings);
-
-            if (!isAcceptedByUser(request)) {
+            if (settings.isShowConfirmationDialog() && !isAcceptedByUser(request)) {
                 return;
             }
-
             mergeRequestService.submit(mergeRequest.getGitLabProjectId(), request, settings)
                     .thenAccept(mergeRequestResponse -> createNotification(mergeRequestResponse, project, gitLabProjectId, settings))
                     .exceptionally(this::createErrorNotification);

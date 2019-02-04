@@ -65,6 +65,7 @@ public class SettingsUi implements Configurable {
     private JCheckBox removeSourceBranchCheckbox;
     private JCheckBox enableAssigneesCheckBox;
     private JButton openAccessTokenUrlButton;
+    private JCheckBox showConfirmationDialogCheckBox;
 
     private CollectionListModel<User> assigneeListModel = new CollectionListModel<>();
 
@@ -129,6 +130,7 @@ public class SettingsUi implements Configurable {
         this.removeSourceBranchCheckbox.setSelected(settings.isRemoveSourceBranchOnMerge());
         this.enableAssigneesCheckBox.setSelected(settings.isAssigneesEnabled());
         this.assigneeList.setEnabled(settings.isAssigneesEnabled());
+        this.showConfirmationDialogCheckBox.setSelected(settings.isShowConfirmationDialog());
     }
 
     private void onValidateServerButtonClicked(ActionEvent event) {
@@ -300,7 +302,9 @@ public class SettingsUi implements Configurable {
                 && SettingUtils.equals(this.mergeRequestTitleTextField, settings.getDefaultTitle())
                 && this.enableDefaultAssigneeActionCheckBox.isSelected() == (settings.isEnableMergeRequestToFavoriteAssignee())
                 && this.enableAssigneesCheckBox.isSelected() == (settings.isAssigneesEnabled())
-                && this.removeSourceBranchCheckbox.isSelected() == (settings.isRemoveSourceBranchOnMerge());
+                && this.removeSourceBranchCheckbox.isSelected() == (settings.isRemoveSourceBranchOnMerge())
+                && this.showConfirmationDialogCheckBox.isSelected() == (settings.isShowConfirmationDialog())
+                ;
 
         return !unmodified;
     }
@@ -345,6 +349,7 @@ public class SettingsUi implements Configurable {
         settings.setEnableMergeRequestToFavoriteAssignee(this.enableDefaultAssigneeActionCheckBox.isSelected());
         settings.setRemoveSourceBranchOnMerge(this.removeSourceBranchCheckbox.isSelected());
         settings.setAssigneesEnabled(this.enableAssigneesCheckBox.isSelected());
+        settings.setShowConfirmationDialog(this.showConfirmationDialogCheckBox.isSelected());
     }
 
     public static class ConfigurableProvider implements VcsConfigurableProvider {
