@@ -15,7 +15,7 @@
 
     <change-notes><![CDATA[
       <p>
-      <em>6</em>
+      <em>7</em>
       <ul>
         <li>Allow placeholders for source branch and target branch in the Merge Request title</li>
         <li>Allow optional confirmation dialog before Merge Request submission</li>
