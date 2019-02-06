@@ -28,8 +28,8 @@
           </grid>
         </constraints>
         <properties>
-          <editable value="false"/>
-          <enabled value="false"/>
+          <editable value="true"/>
+          <enabled value="true"/>
         </properties>
       </component>
       <component id="65e72" class="javax.swing.JLabel">

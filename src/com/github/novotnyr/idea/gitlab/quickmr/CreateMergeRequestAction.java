@@ -92,7 +92,11 @@ public class CreateMergeRequestAction extends AnAction {
 
     private boolean isAcceptedByUser(MergeRequestRequest request) {
         ConfirmMergeRequestDialog dialog = new ConfirmMergeRequestDialog(request);
-        return dialog.showAndGet();
+        if (dialog.showAndGet()) {
+            request.setTitle(dialog.getMergeRequestTitle());
+            return true;
+        }
+        return false;
     }
 
     @Override
