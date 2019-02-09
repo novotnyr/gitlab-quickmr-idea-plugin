@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -24,9 +25,9 @@ public class ConfirmMergeRequestDialog extends DialogWrapper {
     private JPanel rootPanel;
 
     private JTextField titleTextField;
-    private JTextField sourceBranchTextField;
     private JComboBox<String> targetBranchComboBox;
     private JComboBox<User> assigneeComboBox;
+    private JLabel sourceBranchLabel;
 
     private GitService gitService = new GitService();
 
@@ -35,7 +36,7 @@ public class ConfirmMergeRequestDialog extends DialogWrapper {
         init();
         setTitle("Create Merge Request");
         this.titleTextField.setText(request.getTitle());
-        this.sourceBranchTextField.setText(request.getSourceBranch());
+        this.sourceBranchLabel.setText(String.format("<html>Merge from <b>%s</b> to</html>", request.getSourceBranch()));
 
         setTargetBranchComboBoxModel(request, module);
         setAssigneeComboBoxModel(request, module);
