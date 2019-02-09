@@ -25,6 +25,7 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Optional;
 
 public class CreateMergeRequestAction extends AnAction {
     private User assignee;
@@ -92,12 +93,20 @@ public class CreateMergeRequestAction extends AnAction {
 
     private boolean isAcceptedByUser(MergeRequestRequest request, SelectedModule module) {
         ConfirmMergeRequestDialog dialog = new ConfirmMergeRequestDialog(request, module);
-        if (dialog.showAndGet()) {
-            request.setTargetBranch(dialog.getTargetBranch());
-            request.setTitle(dialog.getMergeRequestTitle());
-            return true;
+        if (!dialog.showAndGet()) {
+            return false;
         }
-        return false;
+        request.setTargetBranch(dialog.getTargetBranch());
+        request.setTitle(dialog.getMergeRequestTitle());
+        Optional<User> maybeAssignee = dialog.getAssignee();
+        if (maybeAssignee.isPresent()) {
+            maybeAssignee
+                    .map(User::getId)
+                    .ifPresent(request::setAssigneeId);
+        } else {
+            request.setAssigneeId(null);
+        }
+        return true;
     }
 
     @Override

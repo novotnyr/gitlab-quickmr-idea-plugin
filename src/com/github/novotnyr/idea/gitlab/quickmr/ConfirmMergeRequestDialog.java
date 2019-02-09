@@ -2,16 +2,23 @@ package com.github.novotnyr.idea.gitlab.quickmr;
 
 import com.github.novotnyr.idea.git.GitService;
 import com.github.novotnyr.idea.gitlab.MergeRequestRequest;
+import com.github.novotnyr.idea.gitlab.User;
+import com.github.novotnyr.idea.gitlab.quickmr.settings.Settings;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.ui.ListCellRendererWrapper;
 import git4idea.GitLocalBranch;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import java.util.Objects;
+import java.util.Optional;
 
 public class ConfirmMergeRequestDialog extends DialogWrapper {
     private JPanel rootPanel;
@@ -19,6 +26,7 @@ public class ConfirmMergeRequestDialog extends DialogWrapper {
     private JTextField titleTextField;
     private JTextField sourceBranchTextField;
     private JComboBox<String> targetBranchComboBox;
+    private JComboBox<User> assigneeComboBox;
 
     private GitService gitService = new GitService();
 
@@ -29,12 +37,8 @@ public class ConfirmMergeRequestDialog extends DialogWrapper {
         this.titleTextField.setText(request.getTitle());
         this.sourceBranchTextField.setText(request.getSourceBranch());
 
-        DefaultComboBoxModel<String> targetBranchComboBoxModel = new DefaultComboBoxModel<>();
-        for (GitLocalBranch localBranch : this.gitService.getLocalBranches(module.getProject(), module.getFile())) {
-            targetBranchComboBoxModel.addElement(localBranch.getName());
-        }
-        this.targetBranchComboBox.setModel(targetBranchComboBoxModel);
-        this.targetBranchComboBox.setSelectedItem(request.getTargetBranch());
+        setTargetBranchComboBoxModel(request, module);
+        setAssigneeComboBoxModel(request, module);
     }
 
     @Nullable
@@ -65,4 +69,49 @@ public class ConfirmMergeRequestDialog extends DialogWrapper {
     public String getTargetBranch() {
         return (String) this.targetBranchComboBox.getSelectedItem();
     }
+
+    public Optional<User> getAssignee() {
+        User assignee = (User) this.assigneeComboBox.getSelectedItem();
+        if (User.NONE.equals(assignee)) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(assignee);
+    }
+
+    private void setTargetBranchComboBoxModel(MergeRequestRequest request, SelectedModule module) {
+        DefaultComboBoxModel<String> targetBranchComboBoxModel = new DefaultComboBoxModel<>();
+        for (GitLocalBranch localBranch : this.gitService.getLocalBranches(module.getProject(), module.getFile())) {
+            targetBranchComboBoxModel.addElement(localBranch.getName());
+        }
+        this.targetBranchComboBox.setModel(targetBranchComboBoxModel);
+        this.targetBranchComboBox.setSelectedItem(request.getTargetBranch());
+    }
+
+    private void setAssigneeComboBoxModel(MergeRequestRequest request, SelectedModule module) {
+        DefaultComboBoxModel<User> model = new DefaultComboBoxModel<>();
+        Settings settings = ServiceManager.getService(module.getProject(), Settings.class);
+        model.addElement(User.NONE);
+        User implicitAssignee = User.NONE;
+        for (User defaultAssignee : settings.getDefaultAssignees()) {
+            model.addElement(defaultAssignee);
+            if (Objects.equals(request.getAssigneeId(), defaultAssignee.getId())) {
+                implicitAssignee = defaultAssignee;
+            }
+        }
+        this.assigneeComboBox.setModel(model);
+        this.assigneeComboBox.setSelectedItem(implicitAssignee);
+        this.assigneeComboBox.setRenderer(new ListCellRendererWrapper<User>() {
+            @Override
+            public void customize(JList list, User user, int index, boolean selected, boolean hasFocus) {
+                if (User.NONE.equals(user)) {
+                    setText("- none -");
+                    return;
+                }
+                String renderedText = user.getName() + " (" + user.getUsername() + ")";
+                setText(renderedText);
+            }
+        });
+    }
+
+
 }
