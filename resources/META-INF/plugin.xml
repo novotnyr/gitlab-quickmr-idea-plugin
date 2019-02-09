@@ -14,52 +14,9 @@
     ]]></description>
 
     <change-notes><![CDATA[
-      <p>
-      <em>7</em>
       <ul>
-        <li>Allow placeholders for source branch and target branch in the Merge Request title</li>
-        <li>Allow optional confirmation dialog before Merge Request submission</li>
+        <li>Allow editable assignee, target branch and title in the confirmation dialog</li>
       </ul>
-      </p>
-      <p>
-      <em>6</em>
-      <ul>
-        <li>Add <em>Access Token</em> button to conveniently open GitLab token management webpage</li>
-        <li>GitLab URL handling Fixes</li>
-      </ul>
-      <p>
-      <p>
-      <em>5</em>
-      <ul>
-        <li>Treat assignees as optional. Now you can create merge requests without any assignees</li>
-        <li>Clarify GitLab URL format and validation in Settings</li>
-      </ul>
-      <p>
-      <em>4</em>
-      <ul>
-        <li>Fix infinite loading indicator in Preferences on newer IDEA versions</li>
-      </ul>
-      <p>
-      <em>3</em>
-      <p><strong>Important!</strong> GitLab API keys are no longer
-      stored in the preferences in plain-text. You might need to reapply preferences to store the API key in the IDE password store.</p>
-      <ul>
-        <li>Support 'Remove Source Branch on Merge'</li>
-        <li>Store API keys in the IDE password store</li>
-        <li>Improve notification bubbles</li>
-      </ul>
-      <p>
-      <em>2</em>
-      <ul>
-        <li>User interface improvements</li>
-      </ul>
-      </p>
-      <p>
-      <em>1</em>
-      <ul>
-        <li>Initial Release</li>
-      </ul>
-      </p>
     ]]>
     </change-notes>
 
