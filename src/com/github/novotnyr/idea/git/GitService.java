@@ -5,14 +5,26 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import git4idea.GitLocalBranch;
 import git4idea.GitUtil;
+import git4idea.branch.GitBranchesCollection;
 import git4idea.repo.GitRemote;
 import git4idea.repo.GitRepository;
 import git4idea.repo.GitRepositoryManager;
 
+import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GitService {
+    public Collection<GitLocalBranch> getLocalBranches(Project project, VirtualFile file) {
+        GitRepositoryManager repositoryManager = GitUtil.getRepositoryManager(project);
+        GitRepository repo = repositoryManager.getRepositoryForFile(file);
+        if (repo == null) {
+            return null;
+        }
+        GitBranchesCollection branches = repo.getBranches();
+        return branches.getLocalBranches();
+    }
+
     public String getCurrentBranch(SelectedModule module) {
         return getCurrentBranch(module.getProject(), module.getFile());
     }

@@ -65,7 +65,7 @@ public class CreateMergeRequestAction extends AnAction {
             mergeRequest.setSourceBranch(getSourceBranch(selectedModule));
 
             MergeRequestRequest request = mergeRequestService.prepare(mergeRequest, settings);
-            if (settings.isShowConfirmationDialog() && !isAcceptedByUser(request)) {
+            if (settings.isShowConfirmationDialog() && !isAcceptedByUser(request, selectedModule)) {
                 return;
             }
             mergeRequestService.submit(mergeRequest.getGitLabProjectId(), request, settings)
@@ -90,9 +90,10 @@ public class CreateMergeRequestAction extends AnAction {
         }
     }
 
-    private boolean isAcceptedByUser(MergeRequestRequest request) {
-        ConfirmMergeRequestDialog dialog = new ConfirmMergeRequestDialog(request);
+    private boolean isAcceptedByUser(MergeRequestRequest request, SelectedModule module) {
+        ConfirmMergeRequestDialog dialog = new ConfirmMergeRequestDialog(request, module);
         if (dialog.showAndGet()) {
+            request.setTargetBranch(dialog.getTargetBranch());
             request.setTitle(dialog.getMergeRequestTitle());
             return true;
         }
