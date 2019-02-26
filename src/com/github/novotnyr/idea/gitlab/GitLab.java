@@ -1,5 +1,6 @@
 package com.github.novotnyr.idea.gitlab;
 
+import com.github.novotnyr.idea.gitlab.http.HttpClientFactory;
 import com.google.gson.Gson;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.HttpUrl;
@@ -33,10 +34,15 @@ public class GitLab {
     private Gson gson = new Gson();
 
     public GitLab(String baseUri, String privateToken) {
+        this(baseUri, privateToken, false);
+    }
+
+    public GitLab(String baseUri, String privateToken, boolean allowSelfSignedTls) {
         this.baseUri = baseUri;
         this.privateToken = privateToken;
 
-        this.httpClient = new OkHttpClient();
+        HttpClientFactory httpClientFactory = HttpClientFactory.getInstance();
+        this.httpClient = allowSelfSignedTls ? httpClientFactory.getInsecureHttpClient() : httpClientFactory.getHttpClient();
     }
 
     public CompletableFuture<VersionResponse> version() {
