@@ -15,7 +15,7 @@ public class GitLabFactory {
         String uri = this.settings.getGitLabUri();
         String accessToken = this.settings.getAccessToken();
 
-        return new GitLab(uri, accessToken);
+        return new GitLab(uri, accessToken, this.settings.isInsecureTls());
     }
 
     public static GitLabFactory getInstance(Project project) {

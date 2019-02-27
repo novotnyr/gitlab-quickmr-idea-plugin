@@ -32,6 +32,7 @@ import org.apache.http.client.HttpResponseException;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
+import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -66,6 +67,7 @@ public class SettingsUi implements Configurable {
     private JCheckBox enableAssigneesCheckBox;
     private JButton openAccessTokenUrlButton;
     private JCheckBox showConfirmationDialogCheckBox;
+    private JCheckBox insecureTLSCheckBox;
 
     private CollectionListModel<User> assigneeListModel = new CollectionListModel<>();
 
@@ -131,6 +133,7 @@ public class SettingsUi implements Configurable {
         this.enableAssigneesCheckBox.setSelected(settings.isAssigneesEnabled());
         this.assigneeList.setEnabled(settings.isAssigneesEnabled());
         this.showConfirmationDialogCheckBox.setSelected(settings.isShowConfirmationDialog());
+        this.insecureTLSCheckBox.setSelected(settings.isInsecureTls());
     }
 
     private void onValidateServerButtonClicked(ActionEvent event) {
@@ -139,7 +142,7 @@ public class SettingsUi implements Configurable {
             return;
         }
 
-        GitLab gitLab = new GitLab(this.urlTextField.getText(), String.valueOf(accessTokenTextField.getPassword()));
+        GitLab gitLab = new GitLab(this.urlTextField.getText(), String.valueOf(accessTokenTextField.getPassword()), insecureTLSCheckBox.isSelected());
                 gitLab.version().thenRun(() -> {
                     JBPopupFactory.getInstance()
                             .createHtmlTextBalloonBuilder("GitLab connection successful", MessageType.INFO, null)
@@ -185,7 +188,7 @@ public class SettingsUi implements Configurable {
     //-------
 
     public void onAddAssignee(AnActionButton anActionButton) {
-        GitLab gitLab = new GitLab(this.urlTextField.getText(), String.valueOf(accessTokenTextField.getPassword()));
+        GitLab gitLab = new GitLab(this.urlTextField.getText(), String.valueOf(accessTokenTextField.getPassword()), insecureTLSCheckBox.isSelected());
         gitLab.version().thenRun(() -> {
                     ApplicationManagerEx.getApplicationEx().invokeLater(() -> {
                         SelectAssigneeDialog dialog = new SelectAssigneeDialog(this.project, gitLab);
@@ -250,6 +253,12 @@ public class SettingsUi implements Configurable {
         if (throwable instanceof CompletionException) {
             cause = throwable.getCause();
         }
+        if (cause instanceof SSLPeerUnverifiedException) {
+            defaultErrorMessage = "";
+            additionalErrorMessage.setLength(0);
+            additionalErrorMessage.append("SSL/TLS certificate is not valid.\nIf you are using a self-signed TLS certificate on GitLab, please check the 'Insecure TLS' checkbox");
+        }
+
         if (cause instanceof IllegalGitLabUrlException) {
             defaultErrorMessage = "";
             additionalErrorMessage.setLength(0);
@@ -304,6 +313,7 @@ public class SettingsUi implements Configurable {
                 && this.enableAssigneesCheckBox.isSelected() == (settings.isAssigneesEnabled())
                 && this.removeSourceBranchCheckbox.isSelected() == (settings.isRemoveSourceBranchOnMerge())
                 && this.showConfirmationDialogCheckBox.isSelected() == (settings.isShowConfirmationDialog())
+                && this.insecureTLSCheckBox.isSelected() == (settings.isInsecureTls())
                 ;
 
         return !unmodified;
@@ -350,6 +360,7 @@ public class SettingsUi implements Configurable {
         settings.setRemoveSourceBranchOnMerge(this.removeSourceBranchCheckbox.isSelected());
         settings.setAssigneesEnabled(this.enableAssigneesCheckBox.isSelected());
         settings.setShowConfirmationDialog(this.showConfirmationDialogCheckBox.isSelected());
+        settings.setInsecureTls(this.insecureTLSCheckBox.isSelected());
     }
 
     public static class ConfigurableProvider implements VcsConfigurableProvider {

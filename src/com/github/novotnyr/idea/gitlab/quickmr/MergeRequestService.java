@@ -67,7 +67,7 @@ public class MergeRequestService {
 
     @NotNull
     protected GitLab createGitLab(Settings settings) {
-        return new GitLab(settings.getGitLabUri(), settings.getAccessToken());
+        return new GitLab(settings.getGitLabUri(), settings.getAccessToken(), settings.isInsecureTls());
     }
 
     @NotNull

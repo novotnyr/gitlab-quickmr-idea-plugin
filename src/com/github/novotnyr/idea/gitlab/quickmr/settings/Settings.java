@@ -148,6 +148,15 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         this.state.showConfirmationDialog = showConfirmationDialog;
     }
 
+    public boolean isInsecureTls() {
+        return this.state.insecureTls;
+    }
+
+    public void setInsecureTls(boolean insecureTls) {
+        this.state.insecureTls = insecureTls;
+    }
+
+
     private CredentialAttributes getCredentialAttributes() {
         if (getGitLabUri() == null) {
             return null;
@@ -177,6 +186,8 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         public boolean assigneesEnabled = true;
 
         public boolean showConfirmationDialog = false;
+
+        public boolean insecureTls;
 
     }
 }
