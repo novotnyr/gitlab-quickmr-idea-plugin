@@ -15,7 +15,7 @@
 
     <change-notes><![CDATA[
       <ul>
-        <li>Allow editable assignee, target branch and title in the confirmation dialog</li>
+        <li>Support self-signed SSL/TLS certificates for on-premise GitLab instances</li>
       </ul>
     ]]>
     </change-notes>
