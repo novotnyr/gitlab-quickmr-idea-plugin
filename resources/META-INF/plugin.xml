@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.github.novotnyr.gitlab-quickmr-idea-plugin</id>
     <name>GitLab Quick Merge Request</name>
-    <version>9-SNAPSHOT</version>
+    <version>9</version>
     <vendor>Róbert Novotný</vendor>
 
     <description><![CDATA[
