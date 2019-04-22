@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.github.novotnyr.gitlab-quickmr-idea-plugin</id>
     <name>GitLab Quick Merge Request</name>
-    <version>10-SNAPSHOT</version>
+    <version>10</version>
     <vendor>Róbert Novotný</vendor>
 
     <description><![CDATA[
@@ -15,7 +15,7 @@
 
     <change-notes><![CDATA[
       <ul>
-        <li>Support self-signed SSL/TLS certificates for on-premise GitLab instances</li>
+        <li>Add description text field in the Confirmation dialog</li>
       </ul>
     ]]>
     </change-notes>
