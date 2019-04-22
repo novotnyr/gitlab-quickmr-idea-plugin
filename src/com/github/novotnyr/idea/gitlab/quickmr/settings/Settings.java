@@ -17,8 +17,6 @@ public class Settings implements PersistentStateComponent<Settings.State> {
 
     private State state = new State();
 
-    private PasswordSafe passwordSafe;
-
     @Override
     public State getState() {
         return this.state;
@@ -27,7 +25,6 @@ public class Settings implements PersistentStateComponent<Settings.State> {
     @Override
     public void loadState(State state) {
         this.state = state;
-        this.passwordSafe = PasswordSafe.getInstance();
     }
 
     public boolean isInitialized() {
@@ -69,7 +66,6 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         }
     }
 
-
     public List<User> getDefaultAssignees() {
         return this.state.defaultAssignees != null ? this.state.defaultAssignees : new ArrayList<>();
     }
@@ -92,7 +88,7 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         if (credentialAttributes == null) {
             return null;
         }
-        Credentials credentials = this.passwordSafe.get(credentialAttributes);
+        Credentials credentials = PasswordSafe.getInstance().get(credentialAttributes);
         if (credentials == null) {
             return null;
         }
@@ -104,7 +100,7 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         if (credentialAttributes == null) {
             return;
         }
-        this.passwordSafe.setPassword(credentialAttributes, accessToken);
+        PasswordSafe.getInstance().setPassword(credentialAttributes, accessToken);
     }
 
     public String getDefaultTargetBranch() {
@@ -164,10 +160,6 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         String serviceName = NAME + "\t" + getGitLabUri();
         String userName = getGitLabUri();
         return new CredentialAttributes(serviceName, userName, this.getClass(), false);
-    }
-
-    public void setPasswordSafe(PasswordSafe passwordSafe) {
-        this.passwordSafe = passwordSafe;
     }
 
     public static class State {
