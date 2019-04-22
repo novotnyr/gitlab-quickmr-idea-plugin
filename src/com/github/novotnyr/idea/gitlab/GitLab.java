@@ -53,6 +53,10 @@ public class GitLab {
             result.completeExceptionally(new HttpResponseException(500, "Incorrect GitLab URL"));
             return result;
         }
+        if (this.baseUri.endsWith("/")) {
+            result.completeExceptionally(new HttpResponseException(500, "Remove last slash from URL"));
+            return result;
+        }
 
         Request request = prepareRequest("/version").build();
         this.httpClient.newCall(request)
