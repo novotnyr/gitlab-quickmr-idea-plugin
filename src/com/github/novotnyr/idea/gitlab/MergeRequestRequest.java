@@ -11,6 +11,8 @@ public class MergeRequestRequest {
 
     private String title;
 
+    private String description;
+
     @SerializedName("assignee_id")
     private Long assigneeId;
 
@@ -39,6 +41,14 @@ public class MergeRequestRequest {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Long getAssigneeId() {

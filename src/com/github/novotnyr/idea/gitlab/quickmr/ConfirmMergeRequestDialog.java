@@ -17,17 +17,22 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import java.util.Objects;
 import java.util.Optional;
 
 public class ConfirmMergeRequestDialog extends DialogWrapper {
+    private static final boolean VERTICAL = true;
+
     private JPanel rootPanel;
 
     private JTextField titleTextField;
     private JComboBox<String> targetBranchComboBox;
     private JComboBox<User> assigneeComboBox;
     private JLabel sourceBranchLabel;
+    private JTextArea descriptionTextArea;
+    private JPanel hideableDescriptionPanel;
 
     private GitService gitService = new GitService();
 
@@ -65,6 +70,15 @@ public class ConfirmMergeRequestDialog extends DialogWrapper {
 
     public String getMergeRequestTitle() {
         return this.titleTextField.getText();
+    }
+
+    public Optional<String> getMergeRequestDescription() {
+        String text = this.descriptionTextArea.getText();
+        if (text == null || text.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(text);
+        }
     }
 
     public String getTargetBranch() {
@@ -113,6 +127,4 @@ public class ConfirmMergeRequestDialog extends DialogWrapper {
             }
         });
     }
-
-
 }

@@ -98,6 +98,7 @@ public class CreateMergeRequestAction extends AnAction {
         }
         request.setTargetBranch(dialog.getTargetBranch());
         request.setTitle(dialog.getMergeRequestTitle());
+        dialog.getMergeRequestDescription().ifPresent(request::setDescription);
         Optional<User> maybeAssignee = dialog.getAssignee();
         if (maybeAssignee.isPresent()) {
             maybeAssignee
