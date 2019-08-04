@@ -33,6 +33,7 @@ public class MergeRequestService {
         request.setTargetBranch(targetBranch);
         setAssignee(request, newMergeRequest, settings);
         setTitle(request, newMergeRequest, settings);
+        setDescription(request, newMergeRequest, settings);
         request.setRemoveSourceBranch(settings.isRemoveSourceBranchOnMerge());
         return request;
     }
@@ -48,11 +49,28 @@ public class MergeRequestService {
     }
 
     private void setTitle(MergeRequestRequest request, NewMergeRequest newMergeRequest, Settings settings) {
-        String templateTitle = settings.getDefaultTitle();
-        templateTitle = templateTitle.replaceAll("\\{\\{sourceBranch}}", newMergeRequest.getSourceBranch());
-        templateTitle = templateTitle.replaceAll("\\{\\{targetBranch}}", settings.getDefaultTargetBranch());
+        String title = resolvePlaceHolders(request, newMergeRequest, settings.getDefaultTitle(), settings);
+        if (title != null) {
+            request.setTitle(title);
+        }
+    }
 
-        request.setTitle(templateTitle);
+    private void setDescription(MergeRequestRequest request, NewMergeRequest newMergeRequest, Settings settings) {
+        String description = resolvePlaceHolders(request, newMergeRequest, settings.getDefaultDescription(), settings);
+        if (description != null) {
+            request.setDescription(description);
+        }
+    }
+
+    private String resolvePlaceHolders(MergeRequestRequest request, NewMergeRequest newMergeRequest, String template, Settings settings) {
+        if (template == null) {
+            return template;
+        }
+        String resolvedTemplate = template;
+        resolvedTemplate = resolvedTemplate.replaceAll("\\{\\{sourceBranch}}", newMergeRequest.getSourceBranch());
+        resolvedTemplate = resolvedTemplate.replaceAll("\\{\\{targetBranch}}", settings.getDefaultTargetBranch());
+
+        return resolvedTemplate;
     }
 
     private void setAssignee(MergeRequestRequest request, NewMergeRequest newMergeRequest, Settings settings) {

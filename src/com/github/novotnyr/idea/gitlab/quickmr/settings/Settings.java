@@ -31,7 +31,9 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         boolean initialized = this.state.gitLabUri != null
                 && this.getAccessToken() != null
                 && this.state.defaultTargetBranch != null
-                && this.state.defaultTitle != null;
+                && this.state.defaultTitle != null
+                && this.state.defaultDescription != null
+                ;
         if(this.state.assigneesEnabled) {
             return initialized && (this.state.defaultAssignees != null && !this.state.defaultAssignees.isEmpty());
         }
@@ -48,6 +50,14 @@ public class Settings implements PersistentStateComponent<Settings.State> {
 
     public void setDefaultTitle(String defaultTitle) {
         this.state.defaultTitle = defaultTitle;
+    }
+
+    public String getDefaultDescription() {
+        return this.state.defaultDescription;
+    }
+
+    public void setDefaultDescription(String description) {
+        this.state.defaultDescription = description;
     }
 
     public User getDefaultAssignee() {
@@ -170,6 +180,8 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         public String defaultTargetBranch;
 
         public String defaultTitle;
+
+        public String defaultDescription;
 
         public boolean enableMergeRequestToFavoriteAssignee = true;
 

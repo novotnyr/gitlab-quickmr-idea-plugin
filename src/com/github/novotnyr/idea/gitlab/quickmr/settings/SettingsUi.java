@@ -40,6 +40,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -68,6 +69,7 @@ public class SettingsUi implements Configurable {
     private JButton openAccessTokenUrlButton;
     private JCheckBox showConfirmationDialogCheckBox;
     private JCheckBox insecureTLSCheckBox;
+    private JTextArea mergeRequestDescriptionTextArea;
 
     private CollectionListModel<User> assigneeListModel = new CollectionListModel<>();
 
@@ -127,6 +129,7 @@ public class SettingsUi implements Configurable {
         this.accessTokenTextField.setText(settings.getAccessToken());
         this.targetBranchTextField.setText(settings.getDefaultTargetBranch());
         this.mergeRequestTitleTextField.setText(settings.getDefaultTitle());
+        this.mergeRequestDescriptionTextArea.setText(settings.getDefaultDescription());
         this.assigneeListModel.replaceAll(settings.getDefaultAssignees());
         this.enableDefaultAssigneeActionCheckBox.setSelected(settings.isEnableMergeRequestToFavoriteAssignee());
         this.removeSourceBranchCheckbox.setSelected(settings.isRemoveSourceBranchOnMerge());
@@ -309,6 +312,7 @@ public class SettingsUi implements Configurable {
                 && !isAccessTokenModified()
                 && SettingUtils.equals(this.targetBranchTextField, settings.getDefaultTargetBranch())
                 && SettingUtils.equals(this.mergeRequestTitleTextField, settings.getDefaultTitle())
+                && SettingUtils.equals(this.mergeRequestDescriptionTextArea, settings.getDefaultDescription())
                 && this.enableDefaultAssigneeActionCheckBox.isSelected() == (settings.isEnableMergeRequestToFavoriteAssignee())
                 && this.enableAssigneesCheckBox.isSelected() == (settings.isAssigneesEnabled())
                 && this.removeSourceBranchCheckbox.isSelected() == (settings.isRemoveSourceBranchOnMerge())
@@ -356,6 +360,7 @@ public class SettingsUi implements Configurable {
         settings.setDefaultTargetBranch(this.targetBranchTextField.getText());
         settings.setDefaultAssignees(this.assigneeListModel.getItems());
         settings.setDefaultTitle(this.mergeRequestTitleTextField.getText());
+        settings.setDefaultDescription(this.mergeRequestDescriptionTextArea.getText());
         settings.setEnableMergeRequestToFavoriteAssignee(this.enableDefaultAssigneeActionCheckBox.isSelected());
         settings.setRemoveSourceBranchOnMerge(this.removeSourceBranchCheckbox.isSelected());
         settings.setAssigneesEnabled(this.enableAssigneesCheckBox.isSelected());
