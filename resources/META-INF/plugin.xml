@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.github.novotnyr.gitlab-quickmr-idea-plugin</id>
     <name>GitLab Quick Merge Request</name>
-    <version>11-SNAPSHOT</version>
+    <version>11</version>
     <vendor>Róbert Novotný</vendor>
 
     <description><![CDATA[
@@ -15,7 +15,7 @@
 
     <change-notes><![CDATA[
       <ul>
-        <li>Add description text field in the Confirmation dialog</li>
+        <li>Support predefined merge request description in Settings</li>
       </ul>
     ]]>
     </change-notes>
