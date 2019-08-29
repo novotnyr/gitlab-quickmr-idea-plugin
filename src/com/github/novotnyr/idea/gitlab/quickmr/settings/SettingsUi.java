@@ -314,6 +314,9 @@ public class SettingsUi implements Configurable {
                 && SettingUtils.equals(this.mergeRequestTitleTextField, settings.getDefaultTitle())
                 && SettingUtils.equals(this.mergeRequestDescriptionTextArea, settings.getDefaultDescription())
                 && this.enableDefaultAssigneeActionCheckBox.isSelected() == (settings.isEnableMergeRequestToFavoriteAssignee())
+                && SettingUtils.hasSameUniqueElements(
+                        this.assigneeListModel.getItems(),
+                        settings.getDefaultAssignees())
                 && this.enableAssigneesCheckBox.isSelected() == (settings.isAssigneesEnabled())
                 && this.removeSourceBranchCheckbox.isSelected() == (settings.isRemoveSourceBranchOnMerge())
                 && this.showConfirmationDialogCheckBox.isSelected() == (settings.isShowConfirmationDialog())
