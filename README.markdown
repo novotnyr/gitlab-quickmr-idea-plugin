@@ -11,15 +11,32 @@ create Merge Requests for GitLab projects.
 Using the plug-in
 -----------------
 
+### Configure Project Settings 
+
 First, configure the project settings in
 **Preferences | Version Control | GitLab Quick Merge Request**.
+
+### GitLab URL and GitLab REST Access Token 
 
 Then, specify GitLab URL and REST Access Token and enter
 default target branch for Merge Request and a title.
 
+Usually, the following guidelines apply:
+
+#### GitLab URLs 
+* GitLab.com: 
+    * GitLab URL: https://gitlab.com/api/v4
+    * Personal Access Token: https://gitlab.com/profile/personal_access_tokens
+* Private instance hosted at gitlab.example.com:
+    * GitLab URL: https://gitlab.example.com/api/v4
+    * Personal Access Token: https://gitlab.example.com/profile/personal_access_tokens
+
+### Set Up Assignees
+
 Then, feel free to add as many assignees as necessary. The first
 assignee is a default one that can be used to super-quick
 Merge Request.
+
 
 Submitting Merge Requests
 -------------------------
