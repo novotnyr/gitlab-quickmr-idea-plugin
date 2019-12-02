@@ -65,7 +65,7 @@ public class GitLab {
                     protected void onRawResponseBody(Response response, String rawResponseBodyString) {
                         if (response.code() != 200) {
                             String contentType = getContentType(response);
-                            result.completeExceptionally(new GitLabHttpResponseException(response.code(), response.message(), rawResponseBodyString));
+                            result.completeExceptionally(new GitLabHttpResponseException(response.code(), response.message(), rawResponseBodyString, contentType));
                         } else {
                             super.onRawResponseBody(response, rawResponseBodyString);
                         }

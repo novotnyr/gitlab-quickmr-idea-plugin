@@ -7,18 +7,22 @@ public class GitLabHttpResponseException extends RuntimeException {
 
     private final String responseBody;
 
-    public GitLabHttpResponseException(int statusCode, String responseMessage, String responseBody) {
+    private final String contentType;
+
+    public GitLabHttpResponseException(int statusCode, String responseMessage, String responseBody, String contentType) {
         super(responseMessage);
         this.statusCode = statusCode;
         this.responseMessage = responseMessage;
         this.responseBody = responseBody;
+        this.contentType = contentType;
     }
 
-    public GitLabHttpResponseException(int statusCode, String responseMessage, String responseBody, Throwable cause) {
+    public GitLabHttpResponseException(int statusCode, String responseMessage, String responseBody, String contentType, Throwable cause) {
         super(responseMessage, cause);
         this.statusCode = statusCode;
         this.responseMessage = responseMessage;
         this.responseBody = responseBody;
+        this.contentType = contentType;
     }
 
     public int getStatusCode() {
@@ -31,5 +35,16 @@ public class GitLabHttpResponseException extends RuntimeException {
 
     public String getResponseBody() {
         return responseBody;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public boolean isHtmlContentType() {
+        return this.contentType != null && (
+                this.contentType.startsWith("text/html")
+                || this.contentType.startsWith("application/xhtml+xml")
+        );
     }
 }
