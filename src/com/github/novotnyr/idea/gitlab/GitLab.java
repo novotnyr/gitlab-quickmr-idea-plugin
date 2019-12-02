@@ -64,11 +64,13 @@ public class GitLab {
                     @Override
                     protected void onRawResponseBody(Response response, String rawResponseBodyString) {
                         if (response.code() != 200) {
+                            String contentType = getContentType(response);
                             result.completeExceptionally(new GitLabHttpResponseException(response.code(), response.message(), rawResponseBodyString));
                         } else {
                             super.onRawResponseBody(response, rawResponseBodyString);
                         }
                     }
+
                 });
         return result;
     }
@@ -258,6 +260,14 @@ public class GitLab {
         url = StringUtils.removeEnd(url, "/");
         url = StringUtils.removeEnd(url, "/api/v4");
         return url;
+    }
+
+    protected String getContentType(Response response) {
+        List<String> headers = response.headers("Content-Type");
+        if (headers.isEmpty()) {
+            return "application/octet-stream";
+        }
+        return headers.get(0);
     }
 
     public static String getAccessTokenWebPageUrl(String gitLabBaseUrl) {
