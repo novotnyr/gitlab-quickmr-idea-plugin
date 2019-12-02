@@ -27,6 +27,7 @@ import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBPasswordField;
 import com.intellij.ui.components.JBTextField;
 import com.squareup.okhttp.HttpUrl;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpResponseException;
 import org.jetbrains.annotations.Nls;
@@ -282,7 +283,14 @@ public class SettingsUi implements Configurable {
             GitLabHttpResponseException gitLabHttpResponseException = (GitLabHttpResponseException) cause;
             String responseBody = gitLabHttpResponseException.getResponseBody();
             if (gitLabHttpResponseException.getStatusCode() == 404) {
-                responseBody = "Server URL must end with /api/v4. Example: http://gitlab.com/api/v4";
+                defaultErrorMessage = "";
+                additionalErrorMessage.append("GitLab V4 REST API not found in this URL\n");
+                if (gitLabHttpResponseException.isHtmlContentType()) {
+                    responseBody = StringEscapeUtils.escapeHtml(responseBody);
+                }
+            }
+            if (responseBody.length() >= 128) {
+                responseBody = responseBody.substring(0, 128) + "...";
             }
             additionalErrorMessage
                     .append("HTTP Status: ").append(gitLabHttpResponseException.getStatusCode()).append("\n")
