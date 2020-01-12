@@ -237,6 +237,12 @@ public class GitLab {
                 }
                 if (response.code() == 400) {
                     result.completeExceptionally(new BadMergeRequestException(response.message()));
+                    return;
+                }
+                String contentType = response.header("Content-Type");
+                if (!"application/json".equals(contentType)) {
+                    result.completeExceptionally(new UnsupportedContentTypeException("GitLab API is misconfigured. Only JSON replies are supported"));
+                    return;
                 }
                 try(ResponseBody body = response.body()) {
                     String json = body.string();
