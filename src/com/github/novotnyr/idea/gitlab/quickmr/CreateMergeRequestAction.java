@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
+import java.util.concurrent.CompletionException;
 
 public class CreateMergeRequestAction extends AnAction {
     private User assignee;
@@ -99,6 +100,7 @@ public class CreateMergeRequestAction extends AnAction {
         request.setTargetBranch(dialog.getTargetBranch());
         request.setTitle(dialog.getMergeRequestTitle());
         dialog.getMergeRequestDescription().ifPresent(request::setDescription);
+        dialog.getMergeRequestLabels().ifPresent(request::setLabels);
         Optional<User> maybeAssignee = dialog.getAssignee();
         if (maybeAssignee.isPresent()) {
             maybeAssignee
@@ -171,9 +173,11 @@ public class CreateMergeRequestAction extends AnAction {
 
     private Void createErrorNotification(Throwable t) {
         String title = "Merge Request Failed";
-        String message = "Failed to create merge request: " + t.getMessage();
+        String messagePrefix = "Failed to create merge request: ";
+        Throwable exception = unwrapCompletionException(t);
+        String message = messagePrefix + exception.getMessage();
         NotificationType notificationType = NotificationType.ERROR;
-        if (t.getCause() instanceof DuplicateMergeRequestException) {
+        if (exception instanceof DuplicateMergeRequestException) {
             title = "Merge Request Already Exists";
             message = "Merge Request has already been submitted";
             notificationType = NotificationType.WARNING;
@@ -183,6 +187,10 @@ public class CreateMergeRequestAction extends AnAction {
 
         Notifications.Bus.notify(notification);
         return null;
+    }
+
+    private Throwable unwrapCompletionException(Throwable t) {
+        return t instanceof CompletionException ? t.getCause() : t;
     }
 
     public void setAssignee(User assignee) {
