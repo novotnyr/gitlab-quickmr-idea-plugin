@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.github.novotnyr.gitlab-quickmr-idea-plugin</id>
     <name>GitLab Quick Merge Request</name>
-    <version>13-SNAPSHOT</version>
+    <version>13</version>
     <vendor>Róbert Novotný</vendor>
 
     <description><![CDATA[
@@ -15,7 +15,8 @@
 
     <change-notes><![CDATA[
       <ul>
-        <li>Assignee list is now properly handling new and removed users</li>
+        <li>Add support for Merge Request labels. Set up default labels in the Settings and customize them in the confirmation dialog</li>
+        <li>Improve error messages on GitLab API URLs and communication</li>
       </ul>
     ]]>
     </change-notes>
