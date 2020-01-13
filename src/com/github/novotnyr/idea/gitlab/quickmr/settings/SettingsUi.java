@@ -71,6 +71,7 @@ public class SettingsUi implements Configurable {
     private JCheckBox showConfirmationDialogCheckBox;
     private JCheckBox insecureTLSCheckBox;
     private JTextArea mergeRequestDescriptionTextArea;
+    private JBTextField labelsTextField;
 
     private CollectionListModel<User> assigneeListModel = new CollectionListModel<>();
 
@@ -118,6 +119,8 @@ public class SettingsUi implements Configurable {
                         .createPanel()
         );
 
+        this.labelsTextField.getEmptyText().setText("labels are comma separated");
+
         this.validateServerButton.addActionListener(this::onValidateServerButtonClicked);
 
         this.enableAssigneesCheckBox.addItemListener(this::onDisableAssigneesItemStateChanged);
@@ -131,6 +134,7 @@ public class SettingsUi implements Configurable {
         this.targetBranchTextField.setText(settings.getDefaultTargetBranch());
         this.mergeRequestTitleTextField.setText(settings.getDefaultTitle());
         this.mergeRequestDescriptionTextArea.setText(settings.getDefaultDescription());
+        this.labelsTextField.setText(settings.getDefaultLabels());
         this.assigneeListModel.replaceAll(settings.getDefaultAssignees());
         this.enableDefaultAssigneeActionCheckBox.setSelected(settings.isEnableMergeRequestToFavoriteAssignee());
         this.removeSourceBranchCheckbox.setSelected(settings.isRemoveSourceBranchOnMerge());
@@ -321,6 +325,7 @@ public class SettingsUi implements Configurable {
                 && SettingUtils.equals(this.targetBranchTextField, settings.getDefaultTargetBranch())
                 && SettingUtils.equals(this.mergeRequestTitleTextField, settings.getDefaultTitle())
                 && SettingUtils.equals(this.mergeRequestDescriptionTextArea, settings.getDefaultDescription())
+                && SettingUtils.equals(this.labelsTextField, settings.getDefaultLabels())
                 && this.enableDefaultAssigneeActionCheckBox.isSelected() == (settings.isEnableMergeRequestToFavoriteAssignee())
                 && SettingUtils.hasSameUniqueElements(
                         this.assigneeListModel.getItems(),
@@ -372,6 +377,7 @@ public class SettingsUi implements Configurable {
         settings.setDefaultAssignees(this.assigneeListModel.getItems());
         settings.setDefaultTitle(this.mergeRequestTitleTextField.getText());
         settings.setDefaultDescription(this.mergeRequestDescriptionTextArea.getText());
+        settings.setDefaultLabels(this.labelsTextField.getText());
         settings.setEnableMergeRequestToFavoriteAssignee(this.enableDefaultAssigneeActionCheckBox.isSelected());
         settings.setRemoveSourceBranchOnMerge(this.removeSourceBranchCheckbox.isSelected());
         settings.setAssigneesEnabled(this.enableAssigneesCheckBox.isSelected());

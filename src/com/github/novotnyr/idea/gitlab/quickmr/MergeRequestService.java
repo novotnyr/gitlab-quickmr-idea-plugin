@@ -34,6 +34,7 @@ public class MergeRequestService {
         setAssignee(request, newMergeRequest, settings);
         setTitle(request, newMergeRequest, settings);
         setDescription(request, newMergeRequest, settings);
+        setLabels(request, newMergeRequest, settings);
         request.setRemoveSourceBranch(settings.isRemoveSourceBranchOnMerge());
         return request;
     }
@@ -82,6 +83,11 @@ public class MergeRequestService {
             }
         }
     }
+
+    private void setLabels(MergeRequestRequest request, NewMergeRequest newMergeRequest, Settings settings) {
+        request.setLabels(settings.getDefaultLabels());
+    }
+
 
     @NotNull
     protected GitLab createGitLab(Settings settings) {

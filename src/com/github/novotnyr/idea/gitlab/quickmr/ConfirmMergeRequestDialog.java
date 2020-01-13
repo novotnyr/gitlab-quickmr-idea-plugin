@@ -44,6 +44,8 @@ public class ConfirmMergeRequestDialog extends DialogWrapper {
         this.titleTextField.setText(request.getTitle());
         this.descriptionTextArea.setText(request.getDescription());
         this.sourceBranchLabel.setText(String.format("<html>Merge from <b>%s</b> to</html>", request.getSourceBranch()));
+
+        this.labelsTextField.setText(request.getLabels());
         this.labelsTextField.getEmptyText().setText("labels,are,comma,separated");
 
         setTargetBranchComboBoxModel(request, module);
