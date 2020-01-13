@@ -8,6 +8,7 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.ListCellRendererWrapper;
+import com.intellij.ui.components.JBTextField;
 import git4idea.GitLocalBranch;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,7 +33,7 @@ public class ConfirmMergeRequestDialog extends DialogWrapper {
     private JComboBox<User> assigneeComboBox;
     private JLabel sourceBranchLabel;
     private JTextArea descriptionTextArea;
-    private com.intellij.ui.components.JBTextField labelsTextField;
+    private JBTextField labelsTextField;
     private JPanel hideableDescriptionPanel;
 
     private GitService gitService = new GitService();
