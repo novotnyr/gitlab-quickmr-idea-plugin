@@ -8,6 +8,7 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.ListCellRendererWrapper;
+import com.intellij.ui.components.JBTextField;
 import git4idea.GitLocalBranch;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,6 +33,7 @@ public class ConfirmMergeRequestDialog extends DialogWrapper {
     private JComboBox<User> assigneeComboBox;
     private JLabel sourceBranchLabel;
     private JTextArea descriptionTextArea;
+    private JBTextField labelsTextField;
     private JPanel hideableDescriptionPanel;
 
     private GitService gitService = new GitService();
@@ -43,6 +45,9 @@ public class ConfirmMergeRequestDialog extends DialogWrapper {
         this.titleTextField.setText(request.getTitle());
         this.descriptionTextArea.setText(request.getDescription());
         this.sourceBranchLabel.setText(String.format("<html>Merge from <b>%s</b> to</html>", request.getSourceBranch()));
+
+        this.labelsTextField.setText(request.getLabels());
+        this.labelsTextField.getEmptyText().setText("labels,are,comma,separated");
 
         setTargetBranchComboBoxModel(request, module);
         setAssigneeComboBoxModel(request, module);
@@ -75,6 +80,15 @@ public class ConfirmMergeRequestDialog extends DialogWrapper {
 
     public Optional<String> getMergeRequestDescription() {
         String text = this.descriptionTextArea.getText();
+        if (text == null || text.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(text);
+        }
+    }
+
+    public Optional<String> getMergeRequestLabels() {
+        String text = this.labelsTextField.getText();
         if (text == null || text.isEmpty()) {
             return Optional.empty();
         } else {

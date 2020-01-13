@@ -33,6 +33,7 @@ public class Settings implements PersistentStateComponent<Settings.State> {
                 && this.state.defaultTargetBranch != null
                 && this.state.defaultTitle != null
                 && this.state.defaultDescription != null
+                && this.state.defaultLabels != null
                 ;
         if(this.state.assigneesEnabled) {
             return initialized && (this.state.defaultAssignees != null && !this.state.defaultAssignees.isEmpty());
@@ -121,6 +122,13 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         this.state.defaultTargetBranch = defaultTargetBranch;
     }
 
+    public String getDefaultLabels() {
+        return this.state.defaultLabels;
+    }
+
+    public void setDefaultLabels(String defaultLabels) {
+        this.state.defaultLabels = defaultLabels;
+    }
 
     public boolean isEnableMergeRequestToFavoriteAssignee() {
         return this.state.enableMergeRequestToFavoriteAssignee;
@@ -182,6 +190,8 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         public String defaultTitle;
 
         public String defaultDescription;
+
+        public String defaultLabels;
 
         public boolean enableMergeRequestToFavoriteAssignee = true;
 

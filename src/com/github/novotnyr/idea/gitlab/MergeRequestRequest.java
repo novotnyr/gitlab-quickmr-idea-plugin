@@ -19,6 +19,8 @@ public class MergeRequestRequest {
     @SerializedName("remove_source_branch")
     private boolean removeSourceBranch;
 
+    private String labels;
+
     public String getSourceBranch() {
         return sourceBranch;
     }
@@ -65,5 +67,13 @@ public class MergeRequestRequest {
 
     public void setRemoveSourceBranch(boolean removeSourceBranch) {
         this.removeSourceBranch = removeSourceBranch;
+    }
+
+    public String getLabels() {
+        return labels;
+    }
+
+    public void setLabels(String labels) {
+        this.labels = labels;
     }
 }
