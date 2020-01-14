@@ -1,20 +1,28 @@
 package com.github.novotnyr.idea.git;
 
 import com.github.novotnyr.idea.gitlab.quickmr.SelectedModule;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vcs.VcsException;
+import com.intellij.openapi.vcs.history.VcsRevisionDescription;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.vcsUtil.VcsUtil;
 import git4idea.GitLocalBranch;
 import git4idea.GitUtil;
 import git4idea.branch.GitBranchesCollection;
+import git4idea.history.GitHistoryUtils;
 import git4idea.repo.GitRemote;
 import git4idea.repo.GitRepository;
 import git4idea.repo.GitRepositoryManager;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GitService {
+    private static final Logger LOG = Logger.getInstance("#com.github.novotnyr.idea.git.GitService");
+
     public Collection<GitLocalBranch> getLocalBranches(Project project, VirtualFile file) {
         GitRepositoryManager repositoryManager = GitUtil.getRepositoryManager(project);
         GitRepository repo = repositoryManager.getRepositoryForFile(file);
@@ -62,5 +70,16 @@ public class GitService {
             return matcher.group(2);
         }
         return null;
+    }
+
+    public Optional<String> getLastCommitMessage(Project project) {
+        try {
+            return Optional.ofNullable(GitHistoryUtils.getCurrentRevisionDescription(project, VcsUtil
+                    .getFilePath(project.getBaseDir())))
+                    .map(VcsRevisionDescription::getCommitMessage);
+        } catch (VcsException e) {
+            LOG.error("Unable to load last commit message", e);
+            return Optional.empty();
+        }
     }
 }
