@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.github.novotnyr.gitlab-quickmr-idea-plugin</id>
     <name>GitLab Quick Merge Request</name>
-    <version>13</version>
+    <version>14-SNAPSHOT</version>
     <vendor>Róbert Novotný</vendor>
 
     <description><![CDATA[
@@ -15,8 +15,7 @@
 
     <change-notes><![CDATA[
       <ul>
-        <li>Add support for Merge Request labels. Set up default labels in the Settings and customize them in the confirmation dialog</li>
-        <li>Improve error messages on GitLab API URLs and communication</li>
+        <li></li>
       </ul>
     ]]>
     </change-notes>
