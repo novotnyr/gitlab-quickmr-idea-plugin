@@ -13,8 +13,11 @@ import java.util.concurrent.CompletableFuture;
 public class MergeRequestService {
     private final GitService gitService;
 
-    public MergeRequestService(GitService gitService) {
+    private final PlaceholderResolver placeholderResolver;
+
+    public MergeRequestService(GitService gitService, PlaceholderResolver placeholderResolver) {
         this.gitService = gitService;
+        this.placeholderResolver = placeholderResolver;
     }
 
     public MergeRequestRequest prepare(NewMergeRequest newMergeRequest, Settings settings) throws SourceAndTargetBranchCannotBeEqualException {
@@ -68,8 +71,9 @@ public class MergeRequestService {
             return template;
         }
         String resolvedTemplate = template;
-        resolvedTemplate = resolvedTemplate.replaceAll("\\{\\{sourceBranch}}", newMergeRequest.getSourceBranch());
-        resolvedTemplate = resolvedTemplate.replaceAll("\\{\\{targetBranch}}", settings.getDefaultTargetBranch());
+        resolvedTemplate = this.placeholderResolver.resolvePlaceholder(resolvedTemplate, PlaceholderResolver.SOURCE_BRANCH_PLACEHOLDER, newMergeRequest);
+        resolvedTemplate = this.placeholderResolver.resolvePlaceholder(resolvedTemplate, PlaceholderResolver.TARGET_BRANCH_PLACEHOLDER, newMergeRequest);
+        resolvedTemplate = this.placeholderResolver.resolvePlaceholder(resolvedTemplate, PlaceholderResolver.LAST_COMMIT_MESSAGE_PLACEHOLDER, newMergeRequest);
 
         return resolvedTemplate;
     }
