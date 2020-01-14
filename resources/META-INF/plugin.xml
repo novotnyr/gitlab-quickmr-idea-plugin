@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.github.novotnyr.gitlab-quickmr-idea-plugin</id>
     <name>GitLab Quick Merge Request</name>
-    <version>14-SNAPSHOT</version>
+    <version>14</version>
     <vendor>Róbert Novotný</vendor>
 
     <description><![CDATA[
@@ -15,7 +15,7 @@
 
     <change-notes><![CDATA[
       <ul>
-        <li></li>
+        <li>Add support for {{lastCommitMessage}} placeholder in title and description</li>
       </ul>
     ]]>
     </change-notes>
