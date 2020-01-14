@@ -71,9 +71,9 @@ public class MergeRequestService {
             return template;
         }
         String resolvedTemplate = template;
-        resolvedTemplate = resolvedTemplate.replaceAll("\\{\\{sourceBranch}}", newMergeRequest.getSourceBranch());
-        resolvedTemplate = resolvedTemplate.replaceAll("\\{\\{targetBranch}}", settings.getDefaultTargetBranch());
-        resolvedTemplate = this.placeholderResolver.resolvePlaceholder(resolvedTemplate, "lastCommitMessage");
+        resolvedTemplate = this.placeholderResolver.resolvePlaceholder(resolvedTemplate, PlaceholderResolver.SOURCE_BRANCH_PLACEHOLDER, newMergeRequest);
+        resolvedTemplate = this.placeholderResolver.resolvePlaceholder(resolvedTemplate, PlaceholderResolver.TARGET_BRANCH_PLACEHOLDER, newMergeRequest);
+        resolvedTemplate = this.placeholderResolver.resolvePlaceholder(resolvedTemplate, PlaceholderResolver.LAST_COMMIT_MESSAGE_PLACEHOLDER, newMergeRequest);
 
         return resolvedTemplate;
     }

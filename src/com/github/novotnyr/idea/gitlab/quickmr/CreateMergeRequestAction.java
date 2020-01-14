@@ -60,7 +60,7 @@ public class CreateMergeRequestAction extends AnAction {
 
         try {
             String gitLabProjectId = getProjectName(selectedModule);
-            PlaceholderResolver placeholderResolver = new PlaceholderResolver(this.gitService, project);
+            PlaceholderResolver placeholderResolver = new PlaceholderResolver(this.gitService, project, settings);
             MergeRequestService mergeRequestService = new MergeRequestService(this.gitService, placeholderResolver);
             NewMergeRequest mergeRequest = new NewMergeRequest();
             mergeRequest.setAssignee(this.assignee);
