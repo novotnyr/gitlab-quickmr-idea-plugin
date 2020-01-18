@@ -9,10 +9,17 @@ public class UserToStringConverter implements StringValue, Convertor<Object, Str
     public String getString(Object o) {
         if (o instanceof User) {
             User user = (User) o;
+            StringBuilder resultString = new StringBuilder();
             if (user.getName() != null) {
-                return user.getName();
+                resultString.append(user.getName());
+            } else {
+                resultString.append(user.getId());
             }
-            return String.valueOf(user.getId());
+            String username = user.getUsername();
+            if (username != null && !username.trim().isEmpty()) {
+                resultString.append(" (").append(username).append(")");
+            }
+            return resultString.toString();
         }
         return o.toString();
     }
