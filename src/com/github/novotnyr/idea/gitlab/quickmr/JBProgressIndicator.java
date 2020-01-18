@@ -6,7 +6,15 @@ import com.intellij.openapi.progress.ProgressManager;
 public class JBProgressIndicator implements ProgressIndicator {
     @Override
     public void setPercents(float percents) {
-        ProgressManager.getInstance().getProgressIndicator().setFraction(percents);
+        com.intellij.openapi.progress.ProgressIndicator progressIndicator = ProgressManager.getInstance()
+                .getProgressIndicator();
+        if (percents < 0f) {
+            progressIndicator.setIndeterminate(true);
+        } else {
+            progressIndicator.setIndeterminate(false);
+            progressIndicator.setFraction(percents);
+        }
+
     }
 
     @Override

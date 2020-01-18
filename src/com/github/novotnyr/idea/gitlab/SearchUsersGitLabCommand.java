@@ -56,11 +56,17 @@ public class SearchUsersGitLabCommand extends AbstractGitLabCommand<List<User>> 
                 String json = body.string();
                 User[] users = gson.fromJson(json, User[].class);
                 page = Integer.parseInt(response.header("X-Page"));
-                int totalPages = Integer.parseInt(response.header("X-Total-Pages"));
+                String xTotalPages = response.header("X-Total-Pages");
+                int totalPages = Integer.MAX_VALUE;
+                if (xTotalPages != null) {
+                    totalPages = Integer.parseInt(xTotalPages);
+                    this.progressIndicator.setPercents(page/(float) totalPages);
+                } else {
+                    this.progressIndicator.setPercents(-1);
+                }
                 userBatch = new UserBatch(users, page, totalPages);
                 allUsers.add(userBatch);
 
-                this.progressIndicator.setPercents(page/(float) totalPages);
             } catch (IOException e) {
                 e.printStackTrace();
                 break;
