@@ -10,19 +10,14 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
-import com.squareup.okhttp.internal.Util;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpResponseException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class GitLab {
     private String baseUri;
@@ -91,83 +86,9 @@ public class GitLab {
         return result;
     }
 
-    public CompletableFuture<List<User>> searchUsers2(String username, int batchSize) {
-        CompletableFuture<List<User>> result = new CompletableFuture<>();
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
-        executorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                List<UserBatch> allUsers = new ArrayList<>();
-                int page = 1;
-                while (true) {
-                    int perPage = 5;
-                    Request request = prepareRequest(String.format("/users?search=%s&page=%s&per_page=%s&active=true", username, page, perPage))
-                            .build();
-
-                    System.out.println(request);
-
-                    Call call = httpClient.newCall(request);
-                    ResponseBody body = null;
-                    UserBatch userBatch = null;
-                    try {
-                        Response response = call.execute();
-                        if (response.code() != 200) {
-                            result.completeExceptionally(new IOException("Wrong API call"));
-                            return;
-                        }
-                        body = response.body();
-                        String json = body.string();
-                        User[] users = gson.fromJson(json, User[].class);
-                        page = Integer.parseInt(response.header("X-Page"));
-                        int totalPages = Integer.parseInt(response.header("X-Total-Pages"));
-                        userBatch = new UserBatch(users, page, totalPages);
-                        allUsers.add(userBatch);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        break;
-                    } finally {
-                        Util.closeQuietly(body);
-                    }
-                    if (userBatch != null) {
-                        if (userBatch.isLastPage()) {
-                            break;
-                        }
-                    }
-                    page++;
-                }
-
-                List<User> r = new ArrayList<>();
-                for (UserBatch allUser : allUsers) {
-                    r.addAll(allUser.getUsers());
-                }
-
-                result.complete(r);
-            }
-        });
-
-        return result;
-    }
-
-    private static class UserBatch {
-        private List<User> users = new ArrayList<>();
-
-        private int page;
-
-        private int totalPages;
-
-        public UserBatch(User[] users, int page, int totalPages) {
-            this.users = Arrays.asList(users);
-            this.page = page;
-            this.totalPages = totalPages;
-        }
-
-        public List<User> getUsers() {
-            return users;
-        }
-
-        public boolean isLastPage() {
-            return this.page == this.totalPages;
-        }
+    public CompletableFuture<List<User>> searchUsers2(String username, int batchSize, CommandExecutor commandExecutor, ProgressIndicator progressIndicator) {
+        SearchUsersGitLabCommand command = new SearchUsersGitLabCommand(this.baseUri, this.privateToken, this.httpClient, this.gson, progressIndicator, username);
+        return commandExecutor.execute(command);
     }
 
     public CompletableFuture<List<User>> searchUsers(String username) {
