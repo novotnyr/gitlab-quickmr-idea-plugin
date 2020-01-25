@@ -14,8 +14,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpResponseException;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -125,20 +123,15 @@ public class GitLab {
     }
 
     public CompletableFuture<MergeRequestResponse> createMergeRequest(String gitLabProjectId, MergeRequestRequest mergeRequestRequest) {
-        try {
-            String urlEncodedProjectId = URLEncoder.encode(gitLabProjectId, "UTF-8");
-            return doCreateMergeRequest(urlEncodedProjectId, mergeRequestRequest);
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException("Unable to url encode input", e);
-        }
+        return doCreateMergeRequest(ProjectId.of(gitLabProjectId), mergeRequestRequest);
     }
 
     public CompletableFuture<MergeRequestResponse> createMergeRequest(long projectId, MergeRequestRequest mergeRequestRequest) {
-        return doCreateMergeRequest(String.valueOf(projectId), mergeRequestRequest);
+        return doCreateMergeRequest(ProjectId.of(projectId), mergeRequestRequest);
     }
 
-    protected CompletableFuture<MergeRequestResponse> doCreateMergeRequest(String urlEncodedProjectId, MergeRequestRequest mergeRequestRequest) {
-        String url = this.baseUri + "/projects/" + urlEncodedProjectId + "/merge_requests";
+    protected CompletableFuture<MergeRequestResponse> doCreateMergeRequest(ProjectId projectId, MergeRequestRequest mergeRequestRequest) {
+        String url = this.baseUri + "/projects/" + projectId.getUrlEncoded() + "/merge_requests";
 
         Request request = new Request.Builder()
                 .url(url)
@@ -167,6 +160,10 @@ public class GitLab {
                 }
                 try(ResponseBody body = response.body()) {
                     String json = body.string();
+                    if (isGitLabProjectNotFound(response, json)) {
+                        result.completeExceptionally(GitLabProjectNotFoundException.of(projectId));
+                        return;
+                    }
                     MergeRequestResponse mergeRequestResponse = gson.fromJson(json, MergeRequestResponse.class);
                     result.complete(mergeRequestResponse);
                 }
@@ -174,6 +171,16 @@ public class GitLab {
         });
 
         return result;
+    }
+
+    private boolean isGitLabProjectNotFound(Response response, String json) {
+        // {"message":"404 Project Not Found"}
+        return 404 == response.code() && json.contains("Project Not Found");
+    }
+
+    private boolean isJson(Response response) {
+        String contentType = response.header("Content-Type");
+        return "application/json".equals(contentType);
     }
 
     protected Request.Builder prepareRequest(String urlSuffix) {
