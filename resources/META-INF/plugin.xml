@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.github.novotnyr.gitlab-quickmr-idea-plugin</id>
     <name>GitLab Quick Merge Request</name>
-    <version>15</version>
+    <version>16-SNAPSHOT</version>
     <vendor>Róbert Novotný</vendor>
 
     <description><![CDATA[
@@ -15,7 +15,7 @@
 
     <change-notes><![CDATA[
       <ul>
-        <li>Improve error messages on unavailable remote GitLab URL</li>
+        <li></li>
       </ul>
     ]]>
     </change-notes>
