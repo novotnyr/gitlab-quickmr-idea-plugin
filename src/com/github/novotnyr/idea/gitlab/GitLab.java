@@ -146,20 +146,21 @@ public class GitLab {
             @Override
             public void onResponse(Response response) throws IOException {
                 if (response.code() == 409) {
-                    result.completeExceptionally(new DuplicateMergeRequestException());
+                    completeExceptionally(result, new DuplicateMergeRequestException(), response);
                     return;
                 }
                 if (response.code() == 400) {
-                    result.completeExceptionally(new BadMergeRequestException(response.message()));
+                    completeExceptionally(result, new BadMergeRequestException(response.message()), response);
                     return;
                 }
                 String contentType = response.header("Content-Type");
                 if (!"application/json".equals(contentType)) {
-                    result.completeExceptionally(new UnsupportedContentTypeException("GitLab API is misconfigured. Only JSON replies are supported"));
+                    completeExceptionally(result, new UnsupportedContentTypeException("GitLab API is misconfigured. Only JSON replies are supported"), response);
                     return;
                 }
                 try(ResponseBody body = response.body()) {
                     String json = body.string();
+                    logRawResponseBody(response, json);
                     if (isGitLabProjectNotFound(response, json)) {
                         result.completeExceptionally(GitLabProjectNotFoundException.of(projectId));
                         return;

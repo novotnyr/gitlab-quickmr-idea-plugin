@@ -3,6 +3,7 @@ package com.github.novotnyr.idea.gitlab;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.intellij.openapi.diagnostic.Logger;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -10,10 +11,13 @@ import com.squareup.okhttp.ResponseBody;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class JsonHttpResponseCallback<T> implements Callback {
+    protected final Logger log = Logger.getInstance("#" + JsonHttpResponseCallback.class.getName());
+
     private Type typeToken;
 
     private final CompletableFuture<T> result;
@@ -40,6 +44,10 @@ public class JsonHttpResponseCallback<T> implements Callback {
 
 
     public void onFailure(Request request, IOException e) {
+        if (e instanceof SocketTimeoutException) {
+            result.completeExceptionally(new GitLabIOException("GitLab network connectivity failed: " + e.getMessage(), e));
+            return;
+        }
         result.completeExceptionally(e);
     }
 
@@ -56,9 +64,26 @@ public class JsonHttpResponseCallback<T> implements Callback {
     }
 
     protected void onRawResponseBody(Response response, String rawResponseBodyString) {
-        // do nothing
+        logRawResponseBody(response, rawResponseBodyString);
     }
 
+    protected void logRawResponseBody(Response response, String rawResponseBodyString) {
+        log.debug("HTTP " + response.code() + "\n" + rawResponseBodyString);
+    }
+
+    protected void logAndConsumeRawResponseBody(Response response) {
+        try(ResponseBody body = response.body()) {
+            String bodyPayload = body.string();
+            logRawResponseBody(response, bodyPayload);
+        } catch (IOException e) {
+            log.debug("Cannot log and consume response body", e);
+        }
+    }
+
+    protected void completeExceptionally(CompletableFuture<T> result, Throwable throwable, Response response) {
+        logAndConsumeRawResponseBody(response);
+        result.completeExceptionally(throwable);
+    }
     protected T handleResponse(Response response, ResponseBody body, String json, T object) {
         return object;
     }
