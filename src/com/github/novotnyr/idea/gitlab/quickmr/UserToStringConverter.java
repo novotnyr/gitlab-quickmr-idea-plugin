@@ -1,10 +1,10 @@
 package com.github.novotnyr.idea.gitlab.quickmr;
 
 import com.github.novotnyr.idea.gitlab.User;
-import com.intellij.util.containers.Convertor;
+import com.intellij.util.Function;
 import org.jdesktop.swingx.renderer.StringValue;
 
-public class UserToStringConverter implements StringValue, Convertor<Object, String> {
+public class UserToStringConverter implements StringValue, Function<Object, String> {
     @Override
     public String getString(Object o) {
         if (o instanceof User) {
@@ -25,7 +25,7 @@ public class UserToStringConverter implements StringValue, Convertor<Object, Str
     }
 
     @Override
-    public String convert(Object o) {
+    public String fun(Object o) {
         return getString(o);
     }
 }
