@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.github.novotnyr.gitlab-quickmr-idea-plugin</id>
     <name>GitLab Quick Merge Request</name>
-    <version>16-SNAPSHOT</version>
+    <version>16</version>
     <vendor>Róbert Novotný</vendor>
 
     <description><![CDATA[
@@ -15,7 +15,8 @@
 
     <change-notes><![CDATA[
       <ul>
-        <li></li>
+        <li>Fix issues with HTTPS-based origins</li>
+        <li>Improve compatibility with platform 2020.1</li>
       </ul>
     ]]>
     </change-notes>
