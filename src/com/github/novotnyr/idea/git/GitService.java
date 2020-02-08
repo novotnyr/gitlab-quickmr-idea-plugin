@@ -67,7 +67,14 @@ public class GitService {
     public String getRepoPathWithoutDotGit(String url) {
         Matcher matcher = pattern.matcher(url);
         if (matcher.matches()) {
-            return matcher.group(2);
+            String repoId = matcher.group(2);
+            if (url.startsWith("http")) {
+                // Let's extract away hostname.
+                // E. g. gitlab.com/example/dummy-project is transformed to
+                // example/dummy-project
+                repoId = repoId.substring(repoId.indexOf("/") + 1);
+            }
+            return repoId;
         }
         return null;
     }
