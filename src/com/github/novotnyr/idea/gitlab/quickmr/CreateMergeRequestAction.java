@@ -1,6 +1,7 @@
 package com.github.novotnyr.idea.gitlab.quickmr;
 
 import com.github.novotnyr.idea.git.GitService;
+import com.github.novotnyr.idea.gitlab.AccessDeniedException;
 import com.github.novotnyr.idea.gitlab.DuplicateMergeRequestException;
 import com.github.novotnyr.idea.gitlab.MergeRequestRequest;
 import com.github.novotnyr.idea.gitlab.MergeRequestResponse;
@@ -182,6 +183,11 @@ public class CreateMergeRequestAction extends AnAction {
             title = "Merge Request Already Exists";
             message = "Merge Request has already been submitted";
             notificationType = NotificationType.WARNING;
+        }
+        if (exception instanceof AccessDeniedException) {
+            title = "GitLab Access Denied";
+            message = "Please check Access Token in Preferences.";
+            notificationType = NotificationType.ERROR;
         }
 
         Notification notification = new Notification("quickmr", title, message, notificationType);
