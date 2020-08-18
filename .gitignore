@@ -1,6 +1,9 @@
-out
-.idea
+out/
+.idea/
 *.iml
 *.zip
 
-test
+test/
+gradle.properties
+.gradle
+build/
