@@ -14,9 +14,12 @@ import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.GuiUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,12 +30,12 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 public class CreateMergeRequestAction extends AnAction {
-    private User assignee;
-
     private final GitService gitService = ServiceManager.getService(GitService.class);
+    private User assignee;
 
     public CreateMergeRequestAction() {
     }
@@ -55,12 +58,17 @@ public class CreateMergeRequestAction extends AnAction {
         if (selectedModule == null) {
             return;
         }
+        getProjectName(selectedModule).thenAccept(gitLabProjectId -> {
+            createMergeRequestAsync(selectedModule, gitLabProjectId);
+        });
+    }
 
-        Project project = event.getProject();
-        Settings settings = ServiceManager.getService(project, Settings.class);
-
+    // Runs on nonEDT
+    private void createMergeRequestAsync(SelectedModule selectedModule, String gitLabProjectId) {
+        Project project = selectedModule.getProject();
         try {
-            String gitLabProjectId = getProjectName(selectedModule);
+            Settings settings = ServiceManager.getService(project, Settings.class);
+
             PlaceholderResolver placeholderResolver = new PlaceholderResolver(this.gitService, project, settings);
             MergeRequestService mergeRequestService = new MergeRequestService(this.gitService, placeholderResolver);
             NewMergeRequest mergeRequest = new NewMergeRequest();
@@ -69,10 +77,8 @@ public class CreateMergeRequestAction extends AnAction {
             mergeRequest.setSourceBranch(getSourceBranch(selectedModule));
 
             MergeRequestRequest request = mergeRequestService.prepare(mergeRequest, settings);
-            if (settings.isShowConfirmationDialog() && !isAcceptedByUser(request, selectedModule)) {
-                return;
-            }
-            mergeRequestService.submit(mergeRequest.getGitLabProjectId(), request, settings)
+            validate(request, selectedModule, settings)
+                    .thenCompose(__ -> mergeRequestService.submit(mergeRequest.getGitLabProjectId(), request, settings))
                     .thenAccept(mergeRequestResponse -> createNotification(mergeRequestResponse, project, gitLabProjectId, settings))
                     .exceptionally(this::createErrorNotification);
 
@@ -92,6 +98,26 @@ public class CreateMergeRequestAction extends AnAction {
             );
             Notifications.Bus.notify(notification);
         }
+    }
+
+    // Runs on nonEDT
+    private CompletableFuture<Boolean> validate(MergeRequestRequest request, SelectedModule module, Settings settings) {
+        CompletableFuture<Boolean> result = new CompletableFuture<>();
+        if (!settings.isShowConfirmationDialog()) {
+            result.complete(true);
+        } else {
+            GuiUtils.invokeLaterIfNeeded(new Runnable() {
+                @Override
+                public void run() {
+                    if (!isAcceptedByUser(request, module)) {
+                        result.completeExceptionally(new RequestCannotBeSubmittedException());
+                    } else {
+                        result.complete(true);
+                    }
+                }
+            }, ModalityState.defaultModalityState());
+        }
+        return result;
     }
 
     private boolean isAcceptedByUser(MergeRequestRequest request, SelectedModule module) {
@@ -129,12 +155,21 @@ public class CreateMergeRequestAction extends AnAction {
         e.getPresentation().setEnabledAndVisible(true);
     }
 
-    private String getProjectName(SelectedModule selectedModule) {
-        String projectGitUrl = this.gitService.getProjectGitUrl(selectedModule);
-        if (projectGitUrl == null) {
-            return null;
-        }
-        return this.gitService.getRepoPathWithoutDotGit(projectGitUrl);
+    private CompletableFuture<String> getProjectName(SelectedModule selectedModule) {
+        CompletableFuture<String> result = new CompletableFuture<>();
+        ApplicationManager.getApplication().executeOnPooledThread(() -> {
+            try {
+                String projectGitUrl = this.gitService.getProjectGitUrl(selectedModule);
+                if (projectGitUrl == null) {
+                    return;
+                }
+                String gitLabProjectId = this.gitService.getRepoPathWithoutDotGit(projectGitUrl);
+                result.complete(gitLabProjectId);
+            } catch (Exception e) {
+                result.completeExceptionally(e);
+            }
+        });
+        return result;
     }
 
     @NotNull
@@ -203,4 +238,9 @@ public class CreateMergeRequestAction extends AnAction {
     public void setAssignee(User assignee) {
         this.assignee = assignee;
     }
+
+    private static class RequestCannotBeSubmittedException extends RuntimeException {
+        // empty body
+    }
+
 }

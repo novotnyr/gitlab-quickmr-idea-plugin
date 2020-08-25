@@ -20,7 +20,7 @@ public class MergeRequestService {
         this.placeholderResolver = placeholderResolver;
     }
 
-    public MergeRequestRequest prepare(NewMergeRequest newMergeRequest, Settings settings) throws SourceAndTargetBranchCannotBeEqualException {
+    public MergeRequestRequest prepare(NewMergeRequest newMergeRequest, Settings settings) throws SourceAndTargetBranchCannotBeEqualException, SettingsNotInitializedException {
         if (!settings.isInitialized()) {
             throw new SettingsNotInitializedException();
         }

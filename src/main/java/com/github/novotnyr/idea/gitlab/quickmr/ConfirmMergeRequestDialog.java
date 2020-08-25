@@ -5,11 +5,15 @@ import com.github.novotnyr.idea.gitlab.MergeRequestRequest;
 import com.github.novotnyr.idea.gitlab.User;
 import com.github.novotnyr.idea.gitlab.quickmr.settings.Settings;
 import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.ui.CollectionComboBoxModel;
 import com.intellij.ui.ListCellRendererWrapper;
 import com.intellij.ui.components.JBTextField;
 import git4idea.GitLocalBranch;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.DefaultComboBoxModel;
@@ -20,8 +24,10 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ConfirmMergeRequestDialog extends DialogWrapper {
     private static final boolean VERTICAL = true;
@@ -109,12 +115,24 @@ public class ConfirmMergeRequestDialog extends DialogWrapper {
     }
 
     private void setTargetBranchComboBoxModel(MergeRequestRequest request, SelectedModule module) {
-        DefaultComboBoxModel<String> targetBranchComboBoxModel = new DefaultComboBoxModel<>();
-        for (GitLocalBranch localBranch : this.gitService.getLocalBranches(module.getProject(), module.getFile())) {
-            targetBranchComboBoxModel.addElement(localBranch.getName());
-        }
-        this.targetBranchComboBox.setModel(targetBranchComboBoxModel);
-        this.targetBranchComboBox.setSelectedItem(request.getTargetBranch());
+        Task.Modal task = new Task.Modal(module.getProject(), "Retrieving Git branch info", true) {
+            final List<String> localBranches = new CopyOnWriteArrayList<>();
+
+            @Override
+            public void run(@NotNull ProgressIndicator indicator) {
+                GitService git = ConfirmMergeRequestDialog.this.gitService;
+                for (GitLocalBranch localBranch : git.getLocalBranches(module.getProject(), module.getFile())) {
+                    localBranches.add(localBranch.getName());
+                }
+            }
+
+            @Override
+            public void onSuccess() {
+                JComboBox<String> component = ConfirmMergeRequestDialog.this.targetBranchComboBox;
+                component.setModel(new CollectionComboBoxModel<>(localBranches, request.getTargetBranch()));
+            }
+        };
+        task.queue();
     }
 
     private void setAssigneeComboBoxModel(MergeRequestRequest request, SelectedModule module) {
