@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.github.novotnyr'
-version '17'
+version '18-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
@@ -29,7 +29,7 @@ patchPluginXml {
     sinceBuild '144'
     changeNotes """
         <ul>
-        <li>Improve compatibility with 2020.2. Fix synchronous repository updates on EDT errors</li>
+        <li></li>
         </ul>
       """
 }
