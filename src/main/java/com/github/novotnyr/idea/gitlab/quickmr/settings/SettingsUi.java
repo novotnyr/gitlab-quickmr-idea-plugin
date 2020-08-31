@@ -140,6 +140,7 @@ public class SettingsUi implements Configurable {
         this.removeSourceBranchCheckbox.setSelected(settings.isRemoveSourceBranchOnMerge());
         this.enableAssigneesCheckBox.setSelected(settings.isAssigneesEnabled());
         this.assigneeList.setEnabled(settings.isAssigneesEnabled());
+        this.enableDefaultAssigneeActionCheckBox.setEnabled(settings.isAssigneesEnabled());
         this.showConfirmationDialogCheckBox.setSelected(settings.isShowConfirmationDialog());
         this.insecureTLSCheckBox.setSelected(settings.isInsecureTls());
     }
@@ -171,9 +172,11 @@ public class SettingsUi implements Configurable {
         switch (event.getStateChange()) {
             case ItemEvent.SELECTED:
                 this.assigneeList.setEnabled(true);
+                this.enableDefaultAssigneeActionCheckBox.setEnabled(true);
                 break;
             case ItemEvent.DESELECTED:
                 this.assigneeList.setEnabled(false);
+                this.enableDefaultAssigneeActionCheckBox.setEnabled(false);
                 break;
         }
     }
