@@ -103,7 +103,7 @@ public class CreateMergeRequestAction extends AnAction {
     }
 
     // Runs on nonEDT
-    private CompletableFuture<Boolean> validate(MergeRequestRequest request, SelectedModule module, Settings settings) {
+    protected CompletableFuture<Boolean> validate(MergeRequestRequest request, SelectedModule module, Settings settings) {
         if (!settings.isShowConfirmationDialog()) {
             return completedFuture(true);
         } else {
@@ -111,7 +111,7 @@ public class CreateMergeRequestAction extends AnAction {
         }
     }
 
-    private CompletableFuture<Boolean> showConfirmationDialog(MergeRequestRequest request, SelectedModule module) {
+    protected CompletableFuture<Boolean> showConfirmationDialog(MergeRequestRequest request, SelectedModule module) {
         CompletableFuture<Boolean> result = new CompletableFuture<>();
         GuiUtils.invokeLaterIfNeeded(new Runnable() {
             @Override
