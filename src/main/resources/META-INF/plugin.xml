@@ -43,6 +43,12 @@
         <action class="com.github.novotnyr.idea.gitlab.quickmr.CreateMergeRequestAndAssignToActionGroup" id="com.github.novotnyr.idea.gitlab.quickmr.CreateMergeRequestAndAssignToActionGroup">
             <add-to-group group-id="Git.ContextMenu"/>
         </action>
+        <action id="com.github.novotnyr.idea.gitlab.quickmr.AlwaysConfirmCreateMergeRequestAction"
+                class="com.github.novotnyr.idea.gitlab.quickmr.AlwaysConfirmCreateMergeRequestAction"
+                text="Quick Merge Request..."
+        >
+            <add-to-group group-id="Git.ContextMenu"/>
+        </action>
     </actions>
 
 </idea-plugin>

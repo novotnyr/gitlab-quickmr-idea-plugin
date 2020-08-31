@@ -2,6 +2,7 @@ package com.github.novotnyr.idea.gitlab.quickmr;
 
 import com.github.novotnyr.idea.git.GitService;
 import com.github.novotnyr.idea.gitlab.quickmr.settings.Settings;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 
 import java.util.Optional;
@@ -19,6 +20,10 @@ public class PlaceholderResolver {
         this.gitService = gitService;
         this.project = project;
         this.settings = settings;
+    }
+
+    public PlaceholderResolver(GitService gitService, Project project) {
+        this(gitService, project, ServiceManager.getService(project, Settings.class));
     }
 
     public String resolvePlaceholder(final String template, String placeholder, NewMergeRequest newMergeRequest) {

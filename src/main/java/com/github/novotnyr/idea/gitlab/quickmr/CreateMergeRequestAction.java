@@ -33,6 +33,8 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
+
 public class CreateMergeRequestAction extends AnAction {
     private final GitService gitService = ServiceManager.getService(GitService.class);
     private User assignee;
@@ -101,22 +103,26 @@ public class CreateMergeRequestAction extends AnAction {
     }
 
     // Runs on nonEDT
-    private CompletableFuture<Boolean> validate(MergeRequestRequest request, SelectedModule module, Settings settings) {
-        CompletableFuture<Boolean> result = new CompletableFuture<>();
+    protected CompletableFuture<Boolean> validate(MergeRequestRequest request, SelectedModule module, Settings settings) {
         if (!settings.isShowConfirmationDialog()) {
-            result.complete(true);
+            return completedFuture(true);
         } else {
-            GuiUtils.invokeLaterIfNeeded(new Runnable() {
-                @Override
-                public void run() {
-                    if (!isAcceptedByUser(request, module)) {
-                        result.completeExceptionally(new RequestCannotBeSubmittedException());
-                    } else {
-                        result.complete(true);
-                    }
-                }
-            }, ModalityState.defaultModalityState());
+            return showConfirmationDialog(request, module);
         }
+    }
+
+    protected CompletableFuture<Boolean> showConfirmationDialog(MergeRequestRequest request, SelectedModule module) {
+        CompletableFuture<Boolean> result = new CompletableFuture<>();
+        GuiUtils.invokeLaterIfNeeded(new Runnable() {
+            @Override
+            public void run() {
+                if (!isAcceptedByUser(request, module)) {
+                    result.completeExceptionally(new RequestCannotBeSubmittedException());
+                } else {
+                    result.complete(true);
+                }
+            }
+        }, ModalityState.defaultModalityState());
         return result;
     }
 
