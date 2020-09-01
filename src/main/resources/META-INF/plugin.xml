@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.github.novotnyr.gitlab-quickmr-idea-plugin</id>
     <name>GitLab Quick Merge Request</name>
-    <version>17-SNAPSHOT</version>
+    <version>RELEASE</version>
     <vendor>Róbert Novotný</vendor>
 
     <description><![CDATA[
@@ -15,7 +15,7 @@
 
     <change-notes><![CDATA[
       <ul>
-        <li></li>
+        <li>Show explicit context menu item when no assignees are set up in preferences</li>
       </ul>
     ]]>
     </change-notes>

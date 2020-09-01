@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.github.novotnyr'
-version '18-SNAPSHOT'
+version '18'
 
 sourceCompatibility = 1.8
 
