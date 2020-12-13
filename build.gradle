@@ -21,7 +21,6 @@ dependencies {
 
 intellij {
     version '2018.1'
-    alternativeIdePath '/Applications/IntelliJ IDEA.app'
     plugins = [ 'git4idea' ]
     updateSinceUntilBuild false
 }
