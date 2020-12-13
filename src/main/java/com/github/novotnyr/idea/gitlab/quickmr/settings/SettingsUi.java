@@ -292,9 +292,15 @@ public class SettingsUi implements Configurable {
             if (gitLabHttpResponseException.getStatusCode() == 404) {
                 defaultErrorMessage = "";
                 additionalErrorMessage.append("GitLab V4 REST API not found in this URL\n");
-                if (gitLabHttpResponseException.isHtmlContentType()) {
-                    responseBody = StringEscapeUtils.escapeHtml(responseBody);
+            }
+            if (gitLabHttpResponseException.getStatusCode() == 503) {
+                defaultErrorMessage = "";
+                if (gitLabHttpResponseException.getResponseBody().toLowerCase().contains("checking your browser")) {
+                    additionalErrorMessage.append("GitLab V4 REST API not found in this URL\n");
                 }
+            }
+            if (gitLabHttpResponseException.isHtmlContentType()) {
+                responseBody = StringEscapeUtils.escapeHtml(responseBody);
             }
             if (responseBody.length() >= 128) {
                 responseBody = responseBody.substring(0, 128) + "...";
@@ -302,9 +308,13 @@ public class SettingsUi implements Configurable {
             additionalErrorMessage
                     .append("HTTP Status: ").append(gitLabHttpResponseException.getStatusCode()).append("\n")
                     .append("HTTP Reply: ").append(gitLabHttpResponseException.getMessage()).append("\n")
-                    .append("HTTP Response: ").append(responseBody);
+                    .append("HTTP Response: ").append("<pre>").append(responseBody).append("</pre>");
         }
-        return defaultErrorMessage + additionalErrorMessage;
+        String fullErrorMessage = defaultErrorMessage + additionalErrorMessage;
+        if (fullErrorMessage.startsWith("\n")) {
+            fullErrorMessage = fullErrorMessage.substring(1);
+        }
+        return fullErrorMessage;
     }
 
     //-------
