@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.github.novotnyr'
-version '19-SNAPSHOT'
+version '19'
 
 sourceCompatibility = 1.8
 
@@ -28,7 +28,7 @@ patchPluginXml {
     sinceBuild '144'
     changeNotes """
         <ul>
-        <li></li>
+        <li>Improve handling of incorrect GitLab API URLs</li>
         </ul>
       """
 }
