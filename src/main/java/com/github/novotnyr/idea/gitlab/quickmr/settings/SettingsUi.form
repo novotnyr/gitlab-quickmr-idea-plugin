@@ -214,7 +214,7 @@
         </constraints>
         <properties>
           <font size="11"/>
-          <text value="Placeholders: {{sourceBranch}}, {{targetBranch}}, {{lastCommitMessage}}"/>
+          <text value="Placeholders: {{sourceBranch}}, {{targetBranch}}, {{lastCommitMessage}}, {{lastCommitMessageSubject}}, {{lastCommitMessageBody}}"/>
         </properties>
       </component>
       <component id="e1dd0" class="javax.swing.JLabel">
