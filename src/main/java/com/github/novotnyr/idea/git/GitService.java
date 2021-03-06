@@ -89,4 +89,26 @@ public class GitService {
             return Optional.empty();
         }
     }
+
+    public Optional<String> getLastCommitMessageSubject(Project project) {
+        Optional<String> lastCommitMessage = getLastCommitMessage(project);
+        if (lastCommitMessage.isPresent()) {
+            String commitMessage = lastCommitMessage.get();
+            if (commitMessage.contains(System.lineSeparator())) {
+                return Optional.of(commitMessage.substring(0, commitMessage.indexOf(System.lineSeparator())).trim());
+            }
+        }
+        return lastCommitMessage;
+    }
+
+    public Optional<String> getLastCommitMessageBody(Project project) {
+        Optional<String> lastCommitMessage = getLastCommitMessage(project);
+        if (lastCommitMessage.isPresent()) {
+            String commitMessage = lastCommitMessage.get();
+            if (commitMessage.contains(System.lineSeparator())) {
+                return Optional.of(commitMessage.substring(commitMessage.indexOf(System.lineSeparator())).trim());
+            }
+        }
+        return lastCommitMessage;
+    }
 }

@@ -9,6 +9,8 @@ import java.util.Optional;
 
 public class PlaceholderResolver {
     public static final String LAST_COMMIT_MESSAGE_PLACEHOLDER = "lastCommitMessage";
+    public static final String LAST_COMMIT_MESSAGE_SUBJECT_PLACEHOLDER = "lastCommitMessageSubject";
+    public static final String LAST_COMMIT_MESSAGE_BODY_PLACEHOLDER = "lastCommitMessageBody";
     public static final String SOURCE_BRANCH_PLACEHOLDER = "sourceBranch";
     public static final String TARGET_BRANCH_PLACEHOLDER = "targetBranch";
 
@@ -33,6 +35,18 @@ public class PlaceholderResolver {
             if(maybeLastCommitMessage.isPresent()) {
                 String lastCommitMessage = maybeLastCommitMessage.get();
                 buffer = buffer.replaceAll("\\{\\{lastCommitMessage}}", lastCommitMessage);
+            }
+        }
+        if (LAST_COMMIT_MESSAGE_SUBJECT_PLACEHOLDER.equalsIgnoreCase(placeholder.trim())) {
+            Optional<String> subject = gitService.getLastCommitMessageSubject(this.project);
+            if(subject.isPresent()) {
+                buffer = buffer.replaceAll("\\{\\{lastCommitMessageSubject}}", subject.get());
+            }
+        }
+        if (LAST_COMMIT_MESSAGE_BODY_PLACEHOLDER.equalsIgnoreCase(placeholder.trim())) {
+            Optional<String> body = gitService.getLastCommitMessageBody(this.project);
+            if(body.isPresent()) {
+                buffer = buffer.replaceAll("\\{\\{lastCommitMessageBody}}", body.get());
             }
         }
         if (SOURCE_BRANCH_PLACEHOLDER.equalsIgnoreCase(placeholder.trim())) {
