@@ -21,6 +21,8 @@ public class MergeRequestRequest {
 
     private String labels;
 
+    private boolean squash;
+
     public String getSourceBranch() {
         return sourceBranch;
     }
@@ -75,5 +77,13 @@ public class MergeRequestRequest {
 
     public void setLabels(String labels) {
         this.labels = labels;
+    }
+
+    public boolean isSquash() {
+        return squash;
+    }
+
+    public void setSquash(boolean squash) {
+        this.squash = squash;
     }
 }

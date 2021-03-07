@@ -39,6 +39,7 @@ public class MergeRequestService {
         setDescription(request, newMergeRequest, settings);
         setLabels(request, newMergeRequest, settings);
         request.setRemoveSourceBranch(settings.isRemoveSourceBranchOnMerge());
+        request.setSquash(settings.isSquashCommits());
         return request;
     }
 

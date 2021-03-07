@@ -85,6 +85,13 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         this.state.defaultAssignees = defaultAssignees;
     }
 
+    public boolean isSquashCommits() {
+        return this.state.squashCommits;
+    }
+
+    public void setSquashCommits(boolean squashCommits) {
+        this.state.squashCommits = squashCommits;
+    }
 
     public String getGitLabUri() {
         return this.state.gitLabUri;
@@ -196,6 +203,8 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         public boolean enableMergeRequestToFavoriteAssignee = true;
 
         public boolean removeSourceBranchOnMerge;
+
+        public boolean squashCommits = false;
 
         public boolean assigneesEnabled = true;
 

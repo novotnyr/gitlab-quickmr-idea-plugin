@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -40,6 +41,7 @@ public class ConfirmMergeRequestDialog extends DialogWrapper {
     private JLabel sourceBranchLabel;
     private JTextArea descriptionTextArea;
     private JBTextField labelsTextField;
+    private JCheckBox squashCommitsCheckBox;
     private JPanel hideableDescriptionPanel;
 
     private GitService gitService = new GitService();
@@ -57,6 +59,8 @@ public class ConfirmMergeRequestDialog extends DialogWrapper {
 
         setTargetBranchComboBoxModel(request, module);
         setAssigneeComboBoxModel(request, module);
+
+        this.squashCommitsCheckBox.setSelected(request.isSquash());
     }
 
     @Nullable

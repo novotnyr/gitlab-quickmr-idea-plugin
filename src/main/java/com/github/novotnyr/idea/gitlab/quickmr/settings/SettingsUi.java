@@ -72,6 +72,7 @@ public class SettingsUi implements Configurable {
     private JCheckBox insecureTLSCheckBox;
     private JTextArea mergeRequestDescriptionTextArea;
     private JBTextField labelsTextField;
+    private JCheckBox squashCommitsCheckBox;
 
     private CollectionListModel<User> assigneeListModel = new CollectionListModel<>();
 
@@ -138,6 +139,7 @@ public class SettingsUi implements Configurable {
         this.assigneeListModel.replaceAll(settings.getDefaultAssignees());
         this.enableDefaultAssigneeActionCheckBox.setSelected(settings.isEnableMergeRequestToFavoriteAssignee());
         this.removeSourceBranchCheckbox.setSelected(settings.isRemoveSourceBranchOnMerge());
+        this.squashCommitsCheckBox.setSelected(settings.isSquashCommits());
         this.enableAssigneesCheckBox.setSelected(settings.isAssigneesEnabled());
         this.assigneeList.setEnabled(settings.isAssigneesEnabled());
         this.enableDefaultAssigneeActionCheckBox.setEnabled(settings.isAssigneesEnabled());
@@ -345,6 +347,7 @@ public class SettingsUi implements Configurable {
                         settings.getDefaultAssignees())
                 && this.enableAssigneesCheckBox.isSelected() == (settings.isAssigneesEnabled())
                 && this.removeSourceBranchCheckbox.isSelected() == (settings.isRemoveSourceBranchOnMerge())
+                && this.squashCommitsCheckBox.isSelected() == (settings.isSquashCommits())
                 && this.showConfirmationDialogCheckBox.isSelected() == (settings.isShowConfirmationDialog())
                 && this.insecureTLSCheckBox.isSelected() == (settings.isInsecureTls())
                 ;
@@ -393,6 +396,7 @@ public class SettingsUi implements Configurable {
         settings.setDefaultLabels(this.labelsTextField.getText());
         settings.setEnableMergeRequestToFavoriteAssignee(this.enableDefaultAssigneeActionCheckBox.isSelected());
         settings.setRemoveSourceBranchOnMerge(this.removeSourceBranchCheckbox.isSelected());
+        settings.setSquashCommits(this.squashCommitsCheckBox.isSelected());
         settings.setAssigneesEnabled(this.enableAssigneesCheckBox.isSelected());
         settings.setShowConfirmationDialog(this.showConfirmationDialogCheckBox.isSelected());
         settings.setInsecureTls(this.insecureTLSCheckBox.isSelected());
