@@ -14,6 +14,14 @@ public class PlaceholderResolver {
     public static final String SOURCE_BRANCH_PLACEHOLDER = "sourceBranch";
     public static final String TARGET_BRANCH_PLACEHOLDER = "targetBranch";
 
+    public static final String[] PLACEHOLDERS = {
+        LAST_COMMIT_MESSAGE_PLACEHOLDER,
+        LAST_COMMIT_MESSAGE_SUBJECT_PLACEHOLDER,
+        LAST_COMMIT_MESSAGE_BODY_PLACEHOLDER,
+        SOURCE_BRANCH_PLACEHOLDER,
+        TARGET_BRANCH_PLACEHOLDER
+    };
+
     private final GitService gitService;
     private final Project project;
     private final Settings settings;
