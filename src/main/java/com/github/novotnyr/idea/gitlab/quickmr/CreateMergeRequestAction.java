@@ -8,6 +8,7 @@ import com.github.novotnyr.idea.gitlab.MergeRequestResponse;
 import com.github.novotnyr.idea.gitlab.User;
 import com.github.novotnyr.idea.gitlab.quickmr.settings.Settings;
 import com.github.novotnyr.idea.gitlab.quickmr.settings.SettingsUi;
+import com.intellij.ide.browsers.BrowserLauncher;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationListener;
 import com.intellij.notification.NotificationType;
@@ -25,8 +26,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.Icon;
 import javax.swing.event.HyperlinkEvent;
-import java.awt.Desktop;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
@@ -200,11 +199,8 @@ public class CreateMergeRequestAction extends AnAction {
                 new NotificationListener() {
                     @Override
                     public void hyperlinkUpdate(@NotNull Notification notification, @NotNull HyperlinkEvent hyperlinkEvent) {
-                        Desktop desktop = Desktop.getDesktop();
                         try {
-                            desktop.browse(new URI(mergeRequestResponse.getWebUrl()));
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                            BrowserLauncher.getInstance().browse(new URI(mergeRequestResponse.getWebUrl()));
                         } catch (URISyntaxException e) {
                             e.printStackTrace();
                         }
