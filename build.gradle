@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.github.novotnyr'
-version '21-SNAPSHOT'
+version '21'
 
 sourceCompatibility = 1.8
 
@@ -28,9 +28,8 @@ patchPluginXml {
     sinceBuild '144'
     changeNotes """
         <ul>
-        <li>Support subject and body from commit messages as a merge request template (by <b>Johann Schmitz</b>)</li>        
-        <li>Add support for squashing commits in merge requests</li>        
-        <li>Improve handling of unauthorized communication with GitLab</li>
+        <li>Improve cross-platform browser launches (by <b>Johann Schmitz</b>)</li>        
+        <li>Fix issues with commit message and commit subject placeholders (by <b>Johann Schmitz</b>)</li>        
         </ul>
       """
 }
