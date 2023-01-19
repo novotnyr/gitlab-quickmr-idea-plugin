@@ -20,13 +20,13 @@ dependencies {
 }
 
 intellij {
-    version '2021.3'
+    version = '2021.3'
     plugins = [ 'git4idea' ]
-    updateSinceUntilBuild false
+    updateSinceUntilBuild = false
 }
 patchPluginXml {
-    sinceBuild '213'
-    changeNotes """
+    sinceBuild = '213'
+    changeNotes = """
         <ul>
         <li></li>        
         </ul>
@@ -34,5 +34,5 @@ patchPluginXml {
 }
 
 publishPlugin {
-    token intellijPublishToken
+    token = intellijPublishToken
 }
