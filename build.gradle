@@ -7,6 +7,7 @@ group 'com.github.novotnyr'
 version '22-SNAPSHOT'
 
 sourceCompatibility = 11
+targetCompatibility = 11
 
 repositories {
     mavenCentral()
