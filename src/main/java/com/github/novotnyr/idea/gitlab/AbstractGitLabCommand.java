@@ -7,6 +7,8 @@ import okhttp3.Request;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 
+import static com.github.novotnyr.idea.gitlab.GitLab.PRIVATE_TOKEN_HEADER;
+
 public abstract class AbstractGitLabCommand<T> implements Callable<CompletableFuture<T>>  {
     protected final String baseUri;
 
@@ -26,7 +28,7 @@ public abstract class AbstractGitLabCommand<T> implements Callable<CompletableFu
     protected Request.Builder prepareRequest(String urlSuffix) {
         return new Request.Builder()
                 .url(this.baseUri + urlSuffix)
-                .addHeader("Private-Token", this.privateToken);
+                .addHeader(PRIVATE_TOKEN_HEADER, this.privateToken);
     }
 
     @Override

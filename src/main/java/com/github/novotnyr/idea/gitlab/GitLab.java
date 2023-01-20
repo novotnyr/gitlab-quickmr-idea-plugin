@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class GitLab {
+    public static final String PRIVATE_TOKEN_HEADER = "Private-Token";
+
     private String baseUri;
 
     private String privateToken;
@@ -73,7 +75,7 @@ public class GitLab {
 
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("Private-Token", this.privateToken)
+                .addHeader(PRIVATE_TOKEN_HEADER, this.privateToken)
                 .get()
                 .build();
 
@@ -135,7 +137,7 @@ public class GitLab {
 
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("Private-Token", this.privateToken)
+                .addHeader(PRIVATE_TOKEN_HEADER, this.privateToken)
                 .post(RequestBody.create(MediaType.parse("application/json"), this.gson.toJson(mergeRequestRequest)))
                 .build();
 
@@ -192,7 +194,7 @@ public class GitLab {
     protected Request.Builder prepareRequest(String urlSuffix) {
         return new Request.Builder()
                 .url(this.baseUri + urlSuffix)
-                .addHeader("Private-Token", this.privateToken);
+                .addHeader(PRIVATE_TOKEN_HEADER, this.privateToken);
     }
 
     public static String getBaseUrl(String gitLabRestApiUrl) {
