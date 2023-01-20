@@ -55,7 +55,8 @@ public class SearchUsersGitLabCommand extends AbstractGitLabCommand<List<User>> 
                 body = response.body();
                 String json = body.string();
                 User[] users = gson.fromJson(json, User[].class);
-                page = Integer.parseInt(response.header("X-Page"));
+                //noinspection DataFlowIssue
+                page = Integer.parseInt(response.header("X-Page", "1"));
                 String xTotalPages = response.header("X-Total-Pages");
                 int totalPages = Integer.MAX_VALUE;
                 if (xTotalPages != null) {

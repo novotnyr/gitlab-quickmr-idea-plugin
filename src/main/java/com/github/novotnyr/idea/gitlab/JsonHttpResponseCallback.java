@@ -46,7 +46,7 @@ public class JsonHttpResponseCallback<T> implements Callback {
     @Override
     public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
         try(ResponseBody body = response.body()) {
-            String json = body.string();
+            String json = requireBody(response, body).string();
             onRawResponseBody(response, json);
             Type typeToken = new TypeToken<T>(){}.getType();
             T deserializedJson = this.gson.fromJson(json, typeToken);
@@ -75,7 +75,7 @@ public class JsonHttpResponseCallback<T> implements Callback {
 
     protected void logAndConsumeRawResponseBody(Response response) {
         try(ResponseBody body = response.body()) {
-            String bodyPayload = body.string();
+            String bodyPayload = requireBody(response, body).string();
             logRawResponseBody(response, bodyPayload);
         } catch (IOException e) {
             log.debug("Cannot log and consume response body", e);
@@ -88,5 +88,31 @@ public class JsonHttpResponseCallback<T> implements Callback {
     }
     protected T handleResponse(Response response, ResponseBody body, String json, T object) {
         return object;
+    }
+
+    private boolean assertNotNullBody(Response response) {
+        ResponseBody body = response.body();
+        if (body == null) {
+            result.completeExceptionally(GitLabHttpResponseException.ofNullResponse(response));
+            return false;
+        }
+        return true;
+    }
+
+    @NotNull
+    private ResponseBody requireBody(Response response) throws GitLabHttpResponseException {
+        ResponseBody body = response.body();
+        if (body == null) {
+            throw GitLabHttpResponseException.ofNullResponse(response);
+        }
+        return body;
+    }
+
+    @NotNull
+    private ResponseBody requireBody(Response response, ResponseBody body) {
+        if (body == null) {
+            throw GitLabHttpResponseException.ofNullResponse(response);
+        }
+        return body;
     }
 }

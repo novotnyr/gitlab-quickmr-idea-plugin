@@ -13,9 +13,11 @@ import okhttp3.ResponseBody;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpResponseException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class GitLab {
@@ -166,6 +168,10 @@ public class GitLab {
                     return;
                 }
                 try (ResponseBody body = response.body()) {
+                    if (body == null) {
+                        result.completeExceptionally(new GitLabHttpResponseException(response.code(), response.message(), null, null));
+                        return;
+                    }
                     String json = body.string();
                     logRawResponseBody(response, json);
                     if (isGitLabProjectNotFound(response, json)) {
@@ -181,15 +187,28 @@ public class GitLab {
         return result;
     }
 
+    @Nullable
+    private String getContentType(@Nullable ResponseBody body) {
+        if (body == null) {
+            return null;
+        }
+        MediaType mediaType = body.contentType();
+        if (mediaType == null) {
+            return null;
+        }
+        return mediaType.toString();
+    }
+
     private boolean isGitLabProjectNotFound(Response response, String json) {
         // {"message":"404 Project Not Found"}
         return 404 == response.code() && json.contains("Project Not Found");
     }
 
     private boolean isJson(Response response) {
-        String contentTypeHeader = response.header("Content-Type");
-        MediaType contentType = MediaType.parse(contentTypeHeader);
-        return "application".equals(contentType.type()) && "json".equals(contentType.subtype());
+        return Optional.ofNullable(response.header("Content-Type"))
+                       .map(MediaType::parse)
+                       .filter(contentType -> "application".equals(contentType.type()) && "json".equals(contentType.subtype()))
+                       .isPresent();
     }
 
     protected Request.Builder prepareRequest(String urlSuffix) {

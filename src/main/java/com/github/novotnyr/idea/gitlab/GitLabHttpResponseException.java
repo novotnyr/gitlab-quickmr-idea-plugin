@@ -1,5 +1,8 @@
 package com.github.novotnyr.idea.gitlab;
 
+import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
+
 public class GitLabHttpResponseException extends RuntimeException {
     private final int statusCode;
 
@@ -23,6 +26,10 @@ public class GitLabHttpResponseException extends RuntimeException {
         this.responseMessage = responseMessage;
         this.responseBody = new GitLabHttpResponseBody(responseBody, contentType);
         this.contentType = contentType;
+    }
+
+    public static GitLabHttpResponseException ofNullResponse(@NotNull Response response) {
+        return new GitLabHttpResponseException(response.code(), response.message(), null, null);
     }
 
     public int getStatusCode() {
