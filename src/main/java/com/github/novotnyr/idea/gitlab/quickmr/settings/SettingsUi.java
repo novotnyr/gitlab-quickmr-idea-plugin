@@ -220,7 +220,7 @@ public class SettingsUi implements Configurable {
                 });
     }
 
-    private boolean isAddAssigneeEnabled(AnActionEvent event) { ;
+    private boolean isAddAssigneeEnabled(AnActionEvent event) {
         return StringUtils.isNotEmpty(this.urlTextField.getText());
     }
 

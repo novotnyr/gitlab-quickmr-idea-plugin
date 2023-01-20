@@ -33,7 +33,7 @@ public class SelectAssigneeDialog extends DialogWrapper {
     private JLabel userLabel;
     private JBList userListView;
 
-    private CollectionListModel<User> listModel = new CollectionListModel<User>();
+    private CollectionListModel<User> listModel = new CollectionListModel<>();
     private UserToStringConverter userToStringConverter = new UserToStringConverter();
 
     @SuppressWarnings("unchecked")

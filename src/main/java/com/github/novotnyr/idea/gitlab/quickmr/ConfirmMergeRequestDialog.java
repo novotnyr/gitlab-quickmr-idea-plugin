@@ -152,7 +152,7 @@ public class ConfirmMergeRequestDialog extends DialogWrapper {
         }
         this.assigneeComboBox.setModel(model);
         this.assigneeComboBox.setSelectedItem(implicitAssignee);
-        this.assigneeComboBox.setRenderer(new ListCellRendererWrapper<User>() {
+        this.assigneeComboBox.setRenderer(new ListCellRendererWrapper<>() {
             @Override
             public void customize(JList list, User user, int index, boolean selected, boolean hasFocus) {
                 if (User.NONE.equals(user)) {

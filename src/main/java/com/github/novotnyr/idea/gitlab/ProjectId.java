@@ -1,6 +1,5 @@
 package com.github.novotnyr.idea.gitlab;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -25,10 +24,6 @@ public class ProjectId {
     }
 
     public String getUrlEncoded() {
-        try {
-            return URLEncoder.encode(this.projectId, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException("Unable to url encode input", e);
-        }
+        return URLEncoder.encode(this.projectId, StandardCharsets.UTF_8);
     }
 }

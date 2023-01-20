@@ -8,6 +8,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -43,7 +44,7 @@ public class JsonHttpResponseCallback<T> implements Callback {
     }
 
     @Override
-    public void onResponse(Call call, Response response) throws IOException {
+    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
         try(ResponseBody body = response.body()) {
             String json = body.string();
             onRawResponseBody(response, json);
@@ -56,7 +57,7 @@ public class JsonHttpResponseCallback<T> implements Callback {
     }
 
     @Override
-    public void onFailure(Call call, IOException e) {
+    public void onFailure(@NotNull Call call, @NotNull IOException e) {
         if (e instanceof SocketTimeoutException) {
             result.completeExceptionally(new GitLabIOException("GitLab network connectivity failed: " + e.getMessage(), e));
             return;

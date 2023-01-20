@@ -7,6 +7,7 @@ import com.intellij.ide.passwordSafe.PasswordSafe;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ public class Settings implements PersistentStateComponent<Settings.State> {
     }
 
     @Override
-    public void loadState(State state) {
+    public void loadState(@NotNull State state) {
         this.state = state;
     }
 

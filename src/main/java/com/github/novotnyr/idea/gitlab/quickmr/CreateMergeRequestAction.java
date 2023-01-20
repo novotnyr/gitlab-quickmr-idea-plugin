@@ -54,7 +54,7 @@ public class CreateMergeRequestAction extends AnAction {
     }
 
     @Override
-    public void actionPerformed(AnActionEvent event) {
+    public void actionPerformed(@NotNull AnActionEvent event) {
         SelectedModule selectedModule = SelectedModule.fromEvent(event);
         if (selectedModule == null) {
             return;
