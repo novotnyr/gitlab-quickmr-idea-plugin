@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static com.github.novotnyr.idea.gitlab.HttpUtils.requireBody;
+import static com.github.novotnyr.idea.gitlab.HttpUtils.assertHasBody;
 
 public class SearchUsersGitLabCommand extends AbstractGitLabCommand<List<User>> {
 
@@ -54,7 +54,7 @@ public class SearchUsersGitLabCommand extends AbstractGitLabCommand<List<User>> 
                     result.completeExceptionally(new IOException("Wrong API call"));
                     return result;
                 }
-                body = requireBody(response, response.body());
+                body = assertHasBody(response, response.body());
                 String json = body.string();
                 User[] users = gson.fromJson(json, User[].class);
                 //noinspection DataFlowIssue
