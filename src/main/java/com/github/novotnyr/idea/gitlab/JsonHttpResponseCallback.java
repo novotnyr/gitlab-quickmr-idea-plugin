@@ -16,6 +16,8 @@ import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import static com.github.novotnyr.idea.gitlab.HttpUtils.requireBody;
+
 public class JsonHttpResponseCallback<T> implements Callback {
     protected final Logger log = Logger.getInstance("#" + JsonHttpResponseCallback.class.getName());
 
@@ -97,22 +99,5 @@ public class JsonHttpResponseCallback<T> implements Callback {
             return false;
         }
         return true;
-    }
-
-    @NotNull
-    private ResponseBody requireBody(Response response) throws GitLabHttpResponseException {
-        ResponseBody body = response.body();
-        if (body == null) {
-            throw GitLabHttpResponseException.ofNullResponse(response);
-        }
-        return body;
-    }
-
-    @NotNull
-    private ResponseBody requireBody(Response response, ResponseBody body) {
-        if (body == null) {
-            throw GitLabHttpResponseException.ofNullResponse(response);
-        }
-        return body;
     }
 }
