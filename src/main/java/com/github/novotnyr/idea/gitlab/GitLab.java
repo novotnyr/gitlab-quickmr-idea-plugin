@@ -2,14 +2,14 @@ package com.github.novotnyr.idea.gitlab;
 
 import com.github.novotnyr.idea.gitlab.http.HttpClientFactory;
 import com.google.gson.Gson;
-import com.squareup.okhttp.Call;
-import com.squareup.okhttp.HttpUrl;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.ResponseBody;
+import okhttp3.Call;
+import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpResponseException;
 
@@ -144,7 +144,7 @@ public class GitLab {
         Call call = httpClient.newCall(request);
         call.enqueue(new JsonHttpResponseCallback<MergeRequestResponse>(MergeRequestResponse.class, result, this.gson) {
             @Override
-            public void onResponse(Response response) throws IOException {
+            public void onResponse(Call call, Response response) throws IOException {
                 if (response.code() == 409) {
                     completeExceptionally(result, new DuplicateMergeRequestException(), response);
                     return;

@@ -1,8 +1,8 @@
 package com.github.novotnyr.idea.gitlab;
 
 import com.google.gson.Gson;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;

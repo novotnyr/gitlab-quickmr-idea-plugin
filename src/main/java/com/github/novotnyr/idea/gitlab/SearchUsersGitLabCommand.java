@@ -1,12 +1,12 @@
 package com.github.novotnyr.idea.gitlab;
 
 import com.google.gson.Gson;
-import com.squareup.okhttp.Call;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.ResponseBody;
-import com.squareup.okhttp.internal.Util;
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okhttp3.internal.Util;
 
 import java.io.IOException;
 import java.util.ArrayList;

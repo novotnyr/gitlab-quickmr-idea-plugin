@@ -4,10 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.intellij.openapi.diagnostic.Logger;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.ResponseBody;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -42,16 +42,8 @@ public class JsonHttpResponseCallback<T> implements Callback {
         return callback;
     }
 
-
-    public void onFailure(Request request, IOException e) {
-        if (e instanceof SocketTimeoutException) {
-            result.completeExceptionally(new GitLabIOException("GitLab network connectivity failed: " + e.getMessage(), e));
-            return;
-        }
-        result.completeExceptionally(e);
-    }
-
-    public void onResponse(Response response) throws IOException {
+    @Override
+    public void onResponse(Call call, Response response) throws IOException {
         try(ResponseBody body = response.body()) {
             String json = body.string();
             onRawResponseBody(response, json);
@@ -61,6 +53,15 @@ public class JsonHttpResponseCallback<T> implements Callback {
         } catch (JsonSyntaxException e) {
             result.completeExceptionally(e);
         }
+    }
+
+    @Override
+    public void onFailure(Call call, IOException e) {
+        if (e instanceof SocketTimeoutException) {
+            result.completeExceptionally(new GitLabIOException("GitLab network connectivity failed: " + e.getMessage(), e));
+            return;
+        }
+        result.completeExceptionally(e);
     }
 
     protected void onRawResponseBody(Response response, String rawResponseBodyString) {

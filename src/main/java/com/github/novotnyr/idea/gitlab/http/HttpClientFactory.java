@@ -1,6 +1,6 @@
 package com.github.novotnyr.idea.gitlab.http;
 
-import com.squareup.okhttp.OkHttpClient;
+import okhttp3.OkHttpClient;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
@@ -29,10 +29,10 @@ public class HttpClientFactory {
             sslContext.init(null, InsecureTrustManager.asList(), new SecureRandom());
             SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
-            OkHttpClient client = new OkHttpClient();
-            client.setSslSocketFactory(sslSocketFactory);
-            client.setHostnameVerifier((s, sslSession) -> true);
-            return client;
+            return new OkHttpClient.Builder()
+                    .sslSocketFactory(sslSocketFactory)
+                    .hostnameVerifier((s, sslSession) -> true)
+                    .build();
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             throw new HttpClientException("Cannot create insecure HTTP client: " + e.getMessage(), e);
         }

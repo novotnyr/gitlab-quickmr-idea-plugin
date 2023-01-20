@@ -27,7 +27,7 @@ import com.intellij.ui.awt.RelativePoint;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBPasswordField;
 import com.intellij.ui.components.JBTextField;
-import com.squareup.okhttp.HttpUrl;
+import okhttp3.HttpUrl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpResponseException;
 import org.jetbrains.annotations.Nls;
