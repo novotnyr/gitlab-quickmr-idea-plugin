@@ -216,6 +216,10 @@ public class CreateMergeRequestAction extends AnAction {
         Throwable exception = unwrapCompletionException(t);
         String message = messagePrefix + exception.getMessage();
         NotificationType notificationType = NotificationType.ERROR;
+        if (exception instanceof RequestCannotBeSubmittedException) {
+            // user cancelled
+            return null;
+        }
         if (exception instanceof DuplicateMergeRequestException) {
             title = "Merge Request Already Exists";
             message = "Merge Request has already been submitted";
