@@ -53,7 +53,7 @@ public class JsonHttpResponseCallback<T> implements Callback {
 
     public void onResponse(Response response) throws IOException {
         try(ResponseBody body = response.body()) {
-            String json = response.body().string();
+            String json = body.string();
             onRawResponseBody(response, json);
             Type typeToken = new TypeToken<T>(){}.getType();
             T deserializedJson = this.gson.fromJson(json, typeToken);

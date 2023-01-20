@@ -1,6 +1,7 @@
 package com.github.novotnyr.idea.gitlab.quickmr.settings;
 
 import com.github.novotnyr.idea.gitlab.GitLab;
+import com.github.novotnyr.idea.gitlab.GitLabHttpResponseBody;
 import com.github.novotnyr.idea.gitlab.GitLabHttpResponseException;
 import com.github.novotnyr.idea.gitlab.User;
 import com.github.novotnyr.idea.gitlab.quickmr.IllegalGitLabUrlException;
@@ -27,7 +28,6 @@ import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBPasswordField;
 import com.intellij.ui.components.JBTextField;
 import com.squareup.okhttp.HttpUrl;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpResponseException;
 import org.jetbrains.annotations.Nls;
@@ -290,27 +290,21 @@ public class SettingsUi implements Configurable {
         }
         if (cause instanceof GitLabHttpResponseException) {
             GitLabHttpResponseException gitLabHttpResponseException = (GitLabHttpResponseException) cause;
-            String responseBody = gitLabHttpResponseException.getResponseBody();
+            GitLabHttpResponseBody responseBody = gitLabHttpResponseException.getResponseBody();
             if (gitLabHttpResponseException.getStatusCode() == 404) {
                 defaultErrorMessage = "";
                 additionalErrorMessage.append("GitLab V4 REST API not found in this URL\n");
             }
             if (gitLabHttpResponseException.getStatusCode() == 503) {
                 defaultErrorMessage = "";
-                if (gitLabHttpResponseException.getResponseBody().toLowerCase().contains("checking your browser")) {
+                if (responseBody.containsCaseInsensitive("checking your browser")) {
                     additionalErrorMessage.append("GitLab V4 REST API not found in this URL\n");
                 }
-            }
-            if (gitLabHttpResponseException.isHtmlContentType()) {
-                responseBody = StringEscapeUtils.escapeHtml(responseBody);
-            }
-            if (responseBody.length() >= 128) {
-                responseBody = responseBody.substring(0, 128) + "...";
             }
             additionalErrorMessage
                     .append("HTTP Status: ").append(gitLabHttpResponseException.getStatusCode()).append("\n")
                     .append("HTTP Reply: ").append(gitLabHttpResponseException.getMessage()).append("\n")
-                    .append("HTTP Response: ").append("<pre>").append(responseBody).append("</pre>");
+                    .append("HTTP Response: ").append(responseBody.asHtml());
         }
         String fullErrorMessage = defaultErrorMessage + additionalErrorMessage;
         if (fullErrorMessage.startsWith("\n")) {
