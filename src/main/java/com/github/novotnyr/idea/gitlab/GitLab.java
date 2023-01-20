@@ -158,8 +158,7 @@ public class GitLab {
                     return;
                 }
 
-                String contentType = response.header("Content-Type");
-                if (!"application/json".equals(contentType)) {
+                if (!isJson(response)) {
                     completeExceptionally(result, new UnsupportedContentTypeException("GitLab API is misconfigured. Only JSON replies are supported"), response);
                     return;
                 }
@@ -185,8 +184,9 @@ public class GitLab {
     }
 
     private boolean isJson(Response response) {
-        String contentType = response.header("Content-Type");
-        return "application/json".equals(contentType);
+        String contentTypeHeader = response.header("Content-Type");
+        MediaType contentType = MediaType.parse(contentTypeHeader);
+        return "application".equals(contentType.type()) && "json".equals(contentType.subtype());
     }
 
     protected Request.Builder prepareRequest(String urlSuffix) {
