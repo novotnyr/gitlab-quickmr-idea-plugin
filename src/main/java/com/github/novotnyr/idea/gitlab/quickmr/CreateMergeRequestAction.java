@@ -130,6 +130,7 @@ public class CreateMergeRequestAction extends AnAction {
         }
         request.setTargetBranch(dialog.getTargetBranch());
         request.setTitle(dialog.getMergeRequestTitle());
+        request.setRemoveSourceBranch(dialog.isSourceBranchDeletedOnAccept());
         dialog.getMergeRequestDescription().ifPresent(request::setDescription);
         dialog.getMergeRequestLabels().ifPresent(request::setLabels);
         Optional<User> maybeAssignee = dialog.getAssignee();

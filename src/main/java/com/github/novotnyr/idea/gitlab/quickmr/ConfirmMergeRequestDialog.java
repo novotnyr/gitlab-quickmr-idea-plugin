@@ -42,6 +42,7 @@ public class ConfirmMergeRequestDialog extends DialogWrapper {
     private JTextArea descriptionTextArea;
     private JBTextField labelsTextField;
     private JCheckBox squashCommitsCheckBox;
+    private JCheckBox deleteSourceBranchCheckBox;
     private JPanel hideableDescriptionPanel;
 
     private GitService gitService = new GitService();
@@ -61,6 +62,7 @@ public class ConfirmMergeRequestDialog extends DialogWrapper {
         setAssigneeComboBoxModel(request, module);
 
         this.squashCommitsCheckBox.setSelected(request.isSquash());
+        this.deleteSourceBranchCheckBox.setSelected(request.isRemoveSourceBranch());
     }
 
     @Nullable
@@ -164,4 +166,9 @@ public class ConfirmMergeRequestDialog extends DialogWrapper {
             }
         });
     }
+
+    public boolean isSourceBranchDeletedOnAccept() {
+        return this.deleteSourceBranchCheckBox.isSelected();
+    }
 }
+
