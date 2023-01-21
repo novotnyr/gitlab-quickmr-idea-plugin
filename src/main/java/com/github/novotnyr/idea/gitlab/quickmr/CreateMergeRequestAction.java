@@ -88,7 +88,7 @@ public class CreateMergeRequestAction extends AnAction {
         } catch (SourceAndTargetBranchCannotBeEqualException e) {
             this.createErrorNotification(e);
         } catch (SettingsNotInitializedException e) {
-            Notification notification = new Notification("quickmr", "Quick Merge Request are not configured",
+            Notification notification = new Notification("GitLab Merge Request", "Quick Merge Request are not configured",
                     "Quick Merge Requests are not configured<br/> <a href='link'>Configure</a>",
                     NotificationType.INFORMATION,
                     new NotificationListener() {
@@ -210,7 +210,7 @@ public class CreateMergeRequestAction extends AnAction {
             };
         }
 
-        var notification = new Notification("quickmr", title,
+        var notification = new Notification("GitLab Merge Request", title,
                 assigneeMessage, NotificationType.INFORMATION)
                 .setListener(notificationListener);
         Notifications.Bus.notify(notification);
@@ -237,7 +237,7 @@ public class CreateMergeRequestAction extends AnAction {
             notificationType = NotificationType.ERROR;
         }
 
-        Notification notification = new Notification("quickmr", title, message, notificationType);
+        Notification notification = new Notification("GitLab Merge Request", title, message, notificationType);
 
         Notifications.Bus.notify(notification);
         return null;
