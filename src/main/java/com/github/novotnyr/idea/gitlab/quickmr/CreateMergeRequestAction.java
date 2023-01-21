@@ -20,6 +20,7 @@ import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.text.Strings;
 import com.intellij.ui.GuiUtils;
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread;
 import org.jetbrains.annotations.NotNull;
@@ -195,20 +196,23 @@ public class CreateMergeRequestAction extends AnAction {
 
 
         String title = "Merge Request #" + number + " Created";
-        Notification notification = new Notification("quickmr", title,
-                assigneeMessage + "<a href='mr'>View in GitLab</a>",
-                NotificationType.INFORMATION,
-                new NotificationListener() {
-                    @Override
-                    public void hyperlinkUpdate(@NotNull Notification notification, @NotNull HyperlinkEvent hyperlinkEvent) {
-                        try {
-                            BrowserLauncher.getInstance().browse(new URI(mergeRequestResponse.getWebUrl()));
-                        } catch (URISyntaxException e) {
-                            e.printStackTrace();
-                        }
-                    }
+
+        NotificationListener notificationListener = null;
+        String webUrl = mergeRequestResponse.getWebUrl();
+        if (Strings.isNotEmpty(webUrl)) {
+            assigneeMessage += "<a href='mr'>View in GitLab</a>";
+            notificationListener = (notification, hyperlinkEvent) -> {
+                try {
+                    BrowserLauncher.getInstance().browse(new URI(webUrl));
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
                 }
-        );
+            };
+        }
+
+        var notification = new Notification("quickmr", title,
+                assigneeMessage, NotificationType.INFORMATION)
+                .setListener(notificationListener);
         Notifications.Bus.notify(notification);
     }
 
