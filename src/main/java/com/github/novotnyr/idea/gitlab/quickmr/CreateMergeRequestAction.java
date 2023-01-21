@@ -21,6 +21,7 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.GuiUtils;
+import com.intellij.util.concurrency.annotations.RequiresBackgroundThread;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,7 +65,7 @@ public class CreateMergeRequestAction extends AnAction {
         });
     }
 
-    // Runs on nonEDT
+    @RequiresBackgroundThread
     private void createMergeRequestAsync(SelectedModule selectedModule, String gitLabProjectId) {
         Project project = selectedModule.getProject();
         try {
@@ -191,6 +192,7 @@ public class CreateMergeRequestAction extends AnAction {
         } else {
             assigneeMessage = "Created in <i>" + projectName + "</i><br/><br/>";
         }
+
 
         String title = "Merge Request #" + number + " Created";
         Notification notification = new Notification("quickmr", title,
