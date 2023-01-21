@@ -29,7 +29,7 @@ patchPluginXml {
     sinceBuild = '213'
     changeNotes = """
         <ul>
-        <li></li>        
+        <li>In the confirmation dialog, the source branch deletion can be configured</li>        
         </ul>
       """
 }
