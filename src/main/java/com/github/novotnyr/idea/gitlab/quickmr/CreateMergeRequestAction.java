@@ -27,7 +27,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.Icon;
-import javax.swing.event.HyperlinkEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
@@ -88,18 +87,15 @@ public class CreateMergeRequestAction extends AnAction {
         } catch (SourceAndTargetBranchCannotBeEqualException e) {
             this.createErrorNotification(e);
         } catch (SettingsNotInitializedException e) {
-            Notification notification = new Notification("GitLab Merge Request", "Quick Merge Request are not configured",
+            var mrNotConfigured = new Notification("GitLab Merge Request",
+                    "Quick Merge Request are not configured",
                     "Quick Merge Requests are not configured<br/> <a href='link'>Configure</a>",
-                    NotificationType.INFORMATION,
-                    new NotificationListener() {
-                        @Override
-                        public void hyperlinkUpdate(@NotNull Notification notification, @NotNull HyperlinkEvent hyperlinkEvent) {
-                            ShowSettingsUtil.getInstance().showSettingsDialog(project, SettingsUi.class);
-                            notification.expire();
-                        }
-                    }
-            );
-            Notifications.Bus.notify(notification);
+                    NotificationType.INFORMATION)
+                    .setListener((notification, evt) -> {
+                        ShowSettingsUtil.getInstance().showSettingsDialog(project, SettingsUi.class);
+                        notification.expire();
+                    });
+            Notifications.Bus.notify(mrNotConfigured);
         }
     }
 
