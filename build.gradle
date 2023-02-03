@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.github.novotnyr'
-version '23-SNAPSHOT'
+version '23'
 
 sourceCompatibility = 11
 targetCompatibility = 11
@@ -38,7 +38,7 @@ patchPluginXml {
     sinceBuild = '213'
     changeNotes = """
         <ul>
-        <li></li>
+        <li>Fix untrusted GitLab instances on JDK9</li>
         </ul>
       """
 }
