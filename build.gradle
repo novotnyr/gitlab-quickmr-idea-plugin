@@ -13,6 +13,14 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    ideaVersion = '2021.3'
+    ijPlatform = System.properties['ijPlatform']
+    if (ijPlatform != null) {
+        ideaVersion = ijPlatform
+    }
+}
+
 dependencies {
     implementation "com.squareup.okhttp3:okhttp:3.14.9"
 
@@ -21,10 +29,11 @@ dependencies {
 }
 
 intellij {
-    version = '2021.3'
-    plugins = [ 'git4idea' ]
+    version = ideaVersion
+    plugins = [ 'Git4Idea' ]
     updateSinceUntilBuild = false
 }
+
 patchPluginXml {
     sinceBuild = '213'
     changeNotes = """
