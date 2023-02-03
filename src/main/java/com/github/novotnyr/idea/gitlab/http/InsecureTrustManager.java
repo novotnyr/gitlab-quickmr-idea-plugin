@@ -8,8 +8,14 @@ import java.security.cert.X509Certificate;
  * A trust manager that does not validate certificate chains.
  */
 public class InsecureTrustManager implements X509TrustManager {
+    public static final InsecureTrustManager INSTANCE = new InsecureTrustManager();
+
+    private InsecureTrustManager() {
+        // empty constructor
+    }
+
     public static TrustManager[] asList() {
-        return new TrustManager[]{new InsecureTrustManager()};
+        return new TrustManager[]{INSTANCE};
     }
 
     @Override

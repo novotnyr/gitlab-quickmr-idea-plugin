@@ -30,7 +30,7 @@ public class HttpClientFactory {
             SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
             return new OkHttpClient.Builder()
-                    .sslSocketFactory(sslSocketFactory)
+                    .sslSocketFactory(sslSocketFactory, InsecureTrustManager.INSTANCE)
                     .hostnameVerifier((s, sslSession) -> true)
                     .build();
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
