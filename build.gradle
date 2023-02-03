@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.github.novotnyr'
-version '22'
+version '23-SNAPSHOT'
 
 sourceCompatibility = 11
 targetCompatibility = 11
@@ -29,8 +29,7 @@ patchPluginXml {
     sinceBuild = '213'
     changeNotes = """
         <ul>
-        <li>Require at least Platform 2021.3</li>
-        <li>In the confirmation dialog, the source branch deletion can be configured</li>        
+        <li></li>
         </ul>
       """
 }
