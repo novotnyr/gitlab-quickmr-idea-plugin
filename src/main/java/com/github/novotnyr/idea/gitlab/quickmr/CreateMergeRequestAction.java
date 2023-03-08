@@ -215,7 +215,7 @@ public class CreateMergeRequestAction extends AnAction {
         String messagePrefix = "Failed to create merge request: ";
         Throwable exception = unwrapCompletionException(t);
         String message = messagePrefix + exception.getMessage();
-        NotificationType notificationType = NotificationType.ERROR;
+        NotificationType notificationType = null;
         if (exception instanceof RequestCannotBeSubmittedException) {
             // user cancelled
             return null;
