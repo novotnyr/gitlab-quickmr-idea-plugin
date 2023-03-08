@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.github.novotnyr'
-version '23'
+version '24-SNAPSHOT'
 
 sourceCompatibility = 11
 targetCompatibility = 11
