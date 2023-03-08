@@ -191,7 +191,7 @@ public class CreateMergeRequestAction extends AnAction {
 
         String title = "Merge Request #" + number + " Created";
 
-        NotificationListener notificationListener = null;
+        NotificationListener notificationListener = (notification, event) -> {};
         String webUrl = mergeRequestResponse.getWebUrl();
         if (Strings.isNotEmpty(webUrl)) {
             assigneeMessage += "<a href='mr'>View in GitLab</a>";
