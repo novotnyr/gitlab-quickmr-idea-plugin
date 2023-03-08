@@ -21,7 +21,7 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.Strings;
-import com.intellij.ui.GuiUtils;
+import com.intellij.util.ModalityUiUtil;
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -110,16 +110,13 @@ public class CreateMergeRequestAction extends AnAction {
 
     protected CompletableFuture<Boolean> showConfirmationDialog(MergeRequestRequest request, SelectedModule module) {
         CompletableFuture<Boolean> result = new CompletableFuture<>();
-        GuiUtils.invokeLaterIfNeeded(new Runnable() {
-            @Override
-            public void run() {
-                if (!isAcceptedByUser(request, module)) {
-                    result.completeExceptionally(new RequestCannotBeSubmittedException());
-                } else {
-                    result.complete(true);
-                }
+        ModalityUiUtil.invokeLaterIfNeeded(ModalityState.defaultModalityState(), () -> {
+            if (!isAcceptedByUser(request, module)) {
+                result.completeExceptionally(new RequestCannotBeSubmittedException());
+            } else {
+                result.complete(true);
             }
-        }, ModalityState.defaultModalityState());
+        });
         return result;
     }
 
