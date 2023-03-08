@@ -47,7 +47,7 @@ public class SearchUsersGitLabCommand extends AbstractGitLabCommand<List<User>> 
 
             Call call = httpClient.newCall(request);
             ResponseBody body = null;
-            UserBatch userBatch = null;
+            UserBatch userBatch;
             try {
                 Response response = call.execute();
                 if (response.code() != 200) {
@@ -76,10 +76,8 @@ public class SearchUsersGitLabCommand extends AbstractGitLabCommand<List<User>> 
             } finally {
                 Util.closeQuietly(body);
             }
-            if (userBatch != null) {
-                if (userBatch.isLastPage()) {
-                    break;
-                }
+            if (userBatch.isLastPage()) {
+                break;
             }
             page++;
         }
