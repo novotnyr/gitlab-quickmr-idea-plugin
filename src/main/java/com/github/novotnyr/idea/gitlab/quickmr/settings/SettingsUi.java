@@ -27,6 +27,7 @@ import com.intellij.ui.awt.RelativePoint;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBPasswordField;
 import com.intellij.ui.components.JBTextField;
+import com.intellij.util.concurrency.annotations.RequiresEdt;
 import okhttp3.HttpUrl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpResponseException;
@@ -50,6 +51,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletionException;
+import java.util.function.Consumer;
 
 public class SettingsUi implements Configurable {
     private final Project project;
@@ -202,20 +204,26 @@ public class SettingsUi implements Configurable {
 
     //-------
 
+    @RequiresEdt
+    private void showAndGetAssignee(GitLab gitLab, Consumer<User> onAvailableAssigneeConsumer) {
+        SelectAssigneeDialog dialog = new SelectAssigneeDialog(this.project, gitLab);
+        if (!dialog.showAndGet()) {
+            return;
+        }
+        User assignee = dialog.getAssignee();
+        if (assignee == null) {
+            return;
+        }
+        onAvailableAssigneeConsumer.accept(assignee);
+    }
+
     public void onAddAssignee(AnActionButton anActionButton) {
         GitLab gitLab = new GitLab(this.urlTextField.getText(), String.valueOf(accessTokenTextField.getPassword()), insecureTLSCheckBox.isSelected());
         gitLab.version().thenRun(() -> {
                     ApplicationManagerEx.getApplicationEx().invokeLater(() -> {
-                        SelectAssigneeDialog dialog = new SelectAssigneeDialog(this.project, gitLab);
-                        if (dialog.showAndGet()) {
-                            User assignee = dialog.getAssignee();
-                            if (assignee != null) {
-                                this.assigneeListModel.add(assignee);
-                            }
-                        }
+                        showAndGetAssignee(gitLab, this.assigneeListModel::add);
                     }, ModalityState.any());
-                }
-        )
+                })
                 .exceptionally(t -> {
                     ApplicationManager.getApplication().invokeLater(() -> warnInvalidServer(t));
                     return null;
