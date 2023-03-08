@@ -12,7 +12,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.application.ex.ApplicationManagerEx;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
@@ -371,7 +370,7 @@ public class SettingsUi implements Configurable {
 
     @Override
     public void reset() {
-        this.settings = ServiceManager.getService(this.project, Settings.class);
+        this.settings = this.project.getService(Settings.class);
         bindToComponents(settings);
         cacheAccessToken();
     }

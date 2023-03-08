@@ -5,7 +5,6 @@ import com.github.novotnyr.idea.gitlab.quickmr.settings.Settings;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +27,7 @@ public class CreateMergeRequestAndAssignToActionGroup extends ActionGroup {
         if (project == null) {
             return new AnAction[0];
         }
-        Settings settings = ServiceManager.getService(project, Settings.class);
+        Settings settings = project.getService(Settings.class);
 
         List<AnAction> actions = new ArrayList<>();
         for (User assignee : settings.getDefaultAssignees()) {
@@ -46,7 +45,7 @@ public class CreateMergeRequestAndAssignToActionGroup extends ActionGroup {
         if (project == null) {
             return;
         }
-        Settings settings = ServiceManager.getService(project, Settings.class);
+        Settings settings = project.getService(Settings.class);
         e.getPresentation().setVisible(settings.isAssigneesEnabled());
     }
 }

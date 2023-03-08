@@ -4,7 +4,6 @@ import com.github.novotnyr.idea.git.GitService;
 import com.github.novotnyr.idea.gitlab.MergeRequestRequest;
 import com.github.novotnyr.idea.gitlab.User;
 import com.github.novotnyr.idea.gitlab.quickmr.settings.Settings;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -143,7 +142,7 @@ public class ConfirmMergeRequestDialog extends DialogWrapper {
 
     private void setAssigneeComboBoxModel(MergeRequestRequest request, SelectedModule module) {
         DefaultComboBoxModel<User> model = new DefaultComboBoxModel<>();
-        Settings settings = ServiceManager.getService(module.getProject(), Settings.class);
+        Settings settings = module.getProject().getService(Settings.class);
         model.addElement(User.NONE);
         User implicitAssignee = User.NONE;
         for (User defaultAssignee : settings.getDefaultAssignees()) {

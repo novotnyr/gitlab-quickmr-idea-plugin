@@ -69,7 +69,7 @@ public class CreateMergeRequestAction extends AnAction {
     private void createMergeRequestAsync(SelectedModule selectedModule, String gitLabProjectId) {
         Project project = selectedModule.getProject();
         try {
-            Settings settings = ServiceManager.getService(project, Settings.class);
+            Settings settings = project.getService(Settings.class);
 
             PlaceholderResolver placeholderResolver = new PlaceholderResolver(this.gitService, project, settings);
             MergeRequestService mergeRequestService = new MergeRequestService(this.gitService, placeholderResolver);
@@ -147,7 +147,7 @@ public class CreateMergeRequestAction extends AnAction {
         if (project == null) {
             return;
         }
-        Settings settings = ServiceManager.getService(project, Settings.class);
+        Settings settings = project.getService(Settings.class);
         if (this.assignee == null) {
             // assignee will be deduced from settings, enable according to preferences
             e.getPresentation().setEnabledAndVisible(settings.isEnableMergeRequestToFavoriteAssignee());

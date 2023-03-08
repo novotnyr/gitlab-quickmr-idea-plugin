@@ -3,7 +3,6 @@ package com.github.novotnyr.idea.gitlab.quickmr;
 import com.github.novotnyr.idea.gitlab.MergeRequestRequest;
 import com.github.novotnyr.idea.gitlab.quickmr.settings.Settings;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,7 +36,7 @@ public class AlwaysConfirmCreateMergeRequestAction extends CreateMergeRequestAct
         if (project == null) {
             return;
         }
-        Settings settings = ServiceManager.getService(project, Settings.class);
+        Settings settings = project.getService(Settings.class);
         e.getPresentation().setEnabledAndVisible(!settings.isAssigneesEnabled() && !settings.isEnableMergeRequestToFavoriteAssignee());
     }
 }
