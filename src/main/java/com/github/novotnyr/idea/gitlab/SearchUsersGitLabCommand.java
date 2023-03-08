@@ -98,11 +98,11 @@ public class SearchUsersGitLabCommand extends AbstractGitLabCommand<List<User>> 
     }
 
     private static class UserBatch {
-        private List<User> users = new ArrayList<>();
+        private final List<User> users;
 
-        private int page;
+        private final int page;
 
-        private int totalPages;
+        private final int totalPages;
 
         public UserBatch(User[] users, int page, int totalPages) {
             this.users = Arrays.asList(users);
@@ -111,7 +111,7 @@ public class SearchUsersGitLabCommand extends AbstractGitLabCommand<List<User>> 
         }
 
         public List<User> getUsers() {
-            return users;
+            return this.users;
         }
 
         public boolean isLastPage() {
