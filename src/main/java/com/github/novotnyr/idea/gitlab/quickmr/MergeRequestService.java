@@ -6,6 +6,7 @@ import com.github.novotnyr.idea.gitlab.MergeRequestRequest;
 import com.github.novotnyr.idea.gitlab.MergeRequestResponse;
 import com.github.novotnyr.idea.gitlab.quickmr.settings.Settings;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -67,9 +68,10 @@ public class MergeRequestService {
         }
     }
 
+    @Nullable
     private String resolvePlaceHolders(MergeRequestRequest request, NewMergeRequest newMergeRequest, String template, Settings settings) {
         if (template == null) {
-            return template;
+            return null;
         }
         String resolvedTemplate = template;
 
