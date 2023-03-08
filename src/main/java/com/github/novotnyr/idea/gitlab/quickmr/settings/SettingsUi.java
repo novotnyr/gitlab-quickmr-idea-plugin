@@ -91,6 +91,8 @@ public class SettingsUi implements Configurable {
 
         this.urlTextField.getEmptyText().setText("https://gitlab.com/api/v4");
 
+        this.openAccessTokenUrlButton.setIcon(AllIcons.General.Web);
+
         this.assigneeList = new JBList<>();
         this.assigneeList.setModel(this.assigneeListModel);
         this.assigneeList.setCellRenderer(new DefaultListCellRenderer() {
