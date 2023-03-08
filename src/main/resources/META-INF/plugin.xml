@@ -29,7 +29,6 @@
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="com.github.novotnyr.idea.git.GitService"/>
         <projectService serviceImplementation="com.github.novotnyr.idea.gitlab.quickmr.settings.Settings"/>
-        <projectService serviceImplementation="com.github.novotnyr.idea.gitlab.GitLabFactory"/>
 
         <vcsConfigurableProvider implementation="com.github.novotnyr.idea.gitlab.quickmr.settings.SettingsUi$ConfigurableProvider"/>
 
