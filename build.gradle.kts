@@ -1,3 +1,5 @@
+import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
+
 plugins {
     id("java")
     id("org.jetbrains.intellij.platform") version "2.0.0-SNAPSHOT"
@@ -47,6 +49,8 @@ intellijPlatform {
     verifyPlugin {
         ides {
             recommended()
+            ide("2022.3")
+            ide("2024.1")
         }
     }
 }
