@@ -1,4 +1,5 @@
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
+import org.jetbrains.intellij.platform.gradle.models.ProductRelease
 
 plugins {
     id("java")
@@ -48,12 +49,12 @@ intellijPlatform {
     }
     verifyPlugin {
         ides {
-            val pluginVerifierIdeVersions: String by project
-            pluginVerifierIdeVersions.split(",")
-                .map { it.trim() }
-                .forEach {
-                    ide(it)
-                }
+            select {
+                types = listOf(IntelliJPlatformType.IntellijIdeaCommunity)
+                channels = listOf(ProductRelease.Channel.RELEASE)
+                sinceBuild = "223"
+                untilBuild = "241.*"
+            }
         }
     }
 }
