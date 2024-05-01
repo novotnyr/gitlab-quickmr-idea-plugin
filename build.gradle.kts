@@ -48,9 +48,12 @@ intellijPlatform {
     }
     verifyPlugin {
         ides {
-            recommended()
-            ide("2022.3")
-            ide("2024.1")
+            val pluginVerifierIdeVersions: String by project
+            pluginVerifierIdeVersions.split(",")
+                .map { it.trim() }
+                .forEach {
+                    ide(it)
+                }
         }
     }
 }
