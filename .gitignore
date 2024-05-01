@@ -7,3 +7,5 @@ test/
 gradle.properties
 .gradle
 build/
+
+.intellijPlatform
