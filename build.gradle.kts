@@ -3,7 +3,7 @@ import org.jetbrains.intellij.platform.gradle.models.ProductRelease
 
 plugins {
     id("java")
-    id("org.jetbrains.intellij.platform") version "2.0.0-SNAPSHOT"
+    id("org.jetbrains.intellij.platform") version "2.6.0"
 }
 
 group = "com.github.novotnyr"
@@ -26,7 +26,6 @@ dependencies {
     intellijPlatform {
         intellijIdeaCommunity("2022.3.3")
         bundledPlugin("Git4Idea")
-        instrumentationTools()
         pluginVerifier()
     }
 }
@@ -47,14 +46,9 @@ intellijPlatform {
         val intellijPublishToken: String by project
         token = intellijPublishToken
     }
-    verifyPlugin {
+    pluginVerification {
         ides {
-            select {
-                types = listOf(IntelliJPlatformType.IntellijIdeaCommunity)
-                channels = listOf(ProductRelease.Channel.RELEASE)
-                sinceBuild = "223"
-                untilBuild = "241.*"
-            }
+            recommended()
         }
     }
 }
