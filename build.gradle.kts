@@ -24,7 +24,7 @@ dependencies {
     testImplementation("org.mockito:mockito-core:2.23.4")
 
     intellijPlatform {
-        intellijIdeaCommunity("2022.3.3")
+        intellijIdeaCommunity("2025.1.3")
         bundledPlugin("Git4Idea")
         pluginVerifier()
     }
