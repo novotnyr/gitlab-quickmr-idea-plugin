@@ -18,7 +18,6 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.Strings;
@@ -37,7 +36,7 @@ import java.util.concurrent.CompletionException;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
 public class CreateMergeRequestAction extends AnAction {
-    private final GitService gitService = ServiceManager.getService(GitService.class);
+
     private User assignee;
 
     public CreateMergeRequestAction() {
@@ -71,9 +70,10 @@ public class CreateMergeRequestAction extends AnAction {
         Project project = selectedModule.getProject();
         try {
             Settings settings = project.getService(Settings.class);
+            GitService git = GitService.getInstance();
 
-            PlaceholderResolver placeholderResolver = new PlaceholderResolver(this.gitService, project, settings);
-            MergeRequestService mergeRequestService = new MergeRequestService(this.gitService, placeholderResolver);
+            PlaceholderResolver placeholderResolver = new PlaceholderResolver(git, project, settings);
+            MergeRequestService mergeRequestService = new MergeRequestService(git, placeholderResolver);
             NewMergeRequest mergeRequest = new NewMergeRequest();
             mergeRequest.setAssignee(this.assignee);
             mergeRequest.setGitLabProjectId(gitLabProjectId);
@@ -161,11 +161,12 @@ public class CreateMergeRequestAction extends AnAction {
         CompletableFuture<String> result = new CompletableFuture<>();
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             try {
-                String projectGitUrl = this.gitService.getProjectGitUrl(selectedModule);
+                GitService git = GitService.requireInstance();
+                String projectGitUrl = git.getProjectGitUrl(selectedModule);
                 if (projectGitUrl == null) {
                     result.completeExceptionally(new NoSuchGitRemoteException(selectedModule));
                 }
-                String gitLabProjectId = this.gitService.getRepoPathWithoutDotGit(projectGitUrl);
+                String gitLabProjectId = git.getRepoPathWithoutDotGit(projectGitUrl);
                 result.complete(gitLabProjectId);
             } catch (Exception e) {
                 result.completeExceptionally(e);
@@ -176,7 +177,7 @@ public class CreateMergeRequestAction extends AnAction {
 
     @NotNull
     private String getSourceBranch(SelectedModule selectedModule) {
-        return this.gitService.getCurrentBranch(selectedModule);
+        return GitService.requireInstance().getCurrentBranch(selectedModule);
     }
 
     private void createNotification(MergeRequestResponse mergeRequestResponse, Project project, String projectName, Settings settings) {

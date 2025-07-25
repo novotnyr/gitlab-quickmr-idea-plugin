@@ -1,6 +1,7 @@
 package com.github.novotnyr.idea.git;
 
 import com.github.novotnyr.idea.gitlab.quickmr.SelectedModule;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.VcsException;
@@ -24,6 +25,19 @@ import java.util.regex.Pattern;
 
 public class GitService {
     private static final Logger LOG = Logger.getInstance("#com.github.novotnyr.idea.git.GitService");
+
+    @Nullable
+    public static GitService getInstance() {
+        return ApplicationManager.getApplication().getService(GitService.class);
+    }
+
+    public static GitService requireInstance() throws UnavailableGitServiceException {
+        GitService service = ApplicationManager.getApplication().getService(GitService.class);
+        if (service == null) {
+            throw new UnavailableGitServiceException();
+        }
+        return service;
+    }
 
     public Collection<GitLocalBranch> getLocalBranches(Project project, VirtualFile file) {
         GitRepositoryManager repositoryManager = GitUtil.getRepositoryManager(project);
