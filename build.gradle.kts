@@ -19,6 +19,7 @@ repositories {
 dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.8.4")
     implementation( "com.squareup.okhttp3:okhttp:3.14.9")
+    implementation("org.apache.commons:commons-lang3:3.18.0")
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.mockito:mockito-core:2.23.4")

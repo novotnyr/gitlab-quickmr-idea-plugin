@@ -10,7 +10,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.http.client.HttpResponseException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -219,8 +219,8 @@ public class GitLab {
 
     public static String getBaseUrl(String gitLabRestApiUrl) {
         String url = gitLabRestApiUrl;
-        url = StringUtils.removeEnd(url, "/");
-        url = StringUtils.removeEnd(url, "/api/v4");
+        url = Strings.CS.removeEnd(url, "/");
+        url = Strings.CS.removeEnd(url, "/api/v4");
         return url;
     }
 
