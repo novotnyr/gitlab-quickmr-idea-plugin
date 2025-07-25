@@ -26,7 +26,6 @@ import com.intellij.util.concurrency.annotations.RequiresBackgroundThread;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.Icon;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
@@ -39,19 +38,12 @@ public class CreateMergeRequestAction extends AnAction {
 
     private User assignee;
 
-    public CreateMergeRequestAction() {
-    }
-
-    public CreateMergeRequestAction(Icon icon) {
-        super(icon);
+    protected CreateMergeRequestAction() {
+        // no-op
     }
 
     public CreateMergeRequestAction(@Nullable String text) {
         super(text);
-    }
-
-    public CreateMergeRequestAction(@Nullable String text, @Nullable String description, @Nullable Icon icon) {
-        super(text, description, icon);
     }
 
     @Override
