@@ -1,6 +1,6 @@
 package com.github.novotnyr.idea.gitlab;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import com.intellij.xml.util.XmlStringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +40,7 @@ public class GitLabHttpResponseBody {
         }
         String html = this.body;
         if (this.type == Type.HTML) {
-            html = StringEscapeUtils.escapeHtml(html);
+            html = XmlStringUtil.escapeString(html);
         }
         if (this.body.length() >= 128) {
             html = html.substring(0, 128) + "...";
