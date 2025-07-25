@@ -1,6 +1,7 @@
 package com.github.novotnyr.idea.gitlab.quickmr;
 
 import com.github.novotnyr.idea.git.GitService;
+import com.github.novotnyr.idea.git.NoSuchGitRemoteException;
 import com.github.novotnyr.idea.gitlab.AccessDeniedException;
 import com.github.novotnyr.idea.gitlab.DuplicateMergeRequestException;
 import com.github.novotnyr.idea.gitlab.MergeRequestRequest;
@@ -162,7 +163,7 @@ public class CreateMergeRequestAction extends AnAction {
             try {
                 String projectGitUrl = this.gitService.getProjectGitUrl(selectedModule);
                 if (projectGitUrl == null) {
-                    return;
+                    result.completeExceptionally(new NoSuchGitRemoteException(selectedModule));
                 }
                 String gitLabProjectId = this.gitService.getRepoPathWithoutDotGit(projectGitUrl);
                 result.complete(gitLabProjectId);

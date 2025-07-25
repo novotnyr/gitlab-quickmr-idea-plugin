@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.history.VcsRevisionDescription;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.util.concurrency.annotations.RequiresBackgroundThread;
 import com.intellij.vcsUtil.VcsUtil;
 import git4idea.GitLocalBranch;
 import git4idea.GitUtil;
@@ -14,6 +15,7 @@ import git4idea.history.GitHistoryUtils;
 import git4idea.repo.GitRemote;
 import git4idea.repo.GitRepository;
 import git4idea.repo.GitRepositoryManager;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -50,16 +52,21 @@ public class GitService {
         return currentBranch.getName();
     }
 
+    @Nullable
+    @RequiresBackgroundThread
     public String getProjectGitUrl(SelectedModule selectedModule) {
-        GitRepositoryManager repositoryManager = GitUtil.getRepositoryManager(selectedModule.getProject());
-        GitRepository repo = repositoryManager.getRepositoryForFile(selectedModule.getFile());
-        if (repo == null) {
+        try {
+            Project project = selectedModule.getProject();
+            VirtualFile file = selectedModule.getFile();
+            GitRepository repo = GitUtil.getRepositoryForFile(project, file);
+            for (GitRemote remote : repo.getRemotes()) {
+                return remote.getFirstUrl();
+            }
+            return null;
+        } catch (VcsException e) {
+            LOG.warn("Unable to get Git repository for file '{}' in project '{}'", e);
             return null;
         }
-        for (GitRemote remote : repo.getRemotes()) {
-            return remote.getFirstUrl();
-        }
-        return null;
     }
 
     public static final Pattern pattern = Pattern.compile("(?:git|ssh|https?|git@[-\\w.]+):(//)?(.*?)(\\.git)(/?|#[-\\d\\w._]+?)$");
