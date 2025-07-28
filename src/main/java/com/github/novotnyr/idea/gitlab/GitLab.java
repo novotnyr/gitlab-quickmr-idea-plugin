@@ -13,7 +13,6 @@ import okhttp3.ResponseBody;
 import org.apache.commons.lang3.Strings;
 import org.apache.http.client.HttpResponseException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.List;
@@ -94,27 +93,6 @@ public class GitLab {
         return commandExecutor.execute(command);
     }
 
-    public CompletableFuture<List<User>> searchUsers(String username) {
-        Request request = prepareRequest("/users?username=" + username + "&per_page=300&active=true")
-                .build();
-
-        CompletableFuture<List<User>> result = new CompletableFuture<>();
-        Call call = httpClient.newCall(request);
-        call.enqueue(new JsonListCallback<>(User.class, result, gson));
-        return result;
-    }
-
-    public CompletableFuture<List<User>> listUsers() {
-        Request request = prepareRequest("/users?per_page=300")
-                .build();
-
-        CompletableFuture<List<User>> result = new CompletableFuture<>();
-
-        Call call = httpClient.newCall(request);
-        call.enqueue(new JsonListCallback<>(User.class, result, gson));
-        return result;
-    }
-
     public CompletableFuture<User> findUserByName(String username) {
         Request request = prepareRequest("/users?username=" + username)
                 .build();
@@ -185,18 +163,6 @@ public class GitLab {
         });
 
         return result;
-    }
-
-    @Nullable
-    private String getContentType(@Nullable ResponseBody body) {
-        if (body == null) {
-            return null;
-        }
-        MediaType mediaType = body.contentType();
-        if (mediaType == null) {
-            return null;
-        }
-        return mediaType.toString();
     }
 
     private boolean isGitLabProjectNotFound(Response response, String json) {
