@@ -88,7 +88,7 @@ public class GitLab {
         return result;
     }
 
-    public CompletableFuture<List<User>> searchUsers2(String username, int batchSize, CommandExecutor commandExecutor, ProgressIndicator progressIndicator) {
+    public CompletableFuture<List<User>> searchUsers(String username, int batchSize, CommandExecutor commandExecutor, ProgressIndicator progressIndicator) {
         SearchUsersGitLabCommand command = new SearchUsersGitLabCommand(this.baseUri, this.privateToken, this.httpClient, this.gson, progressIndicator, username);
         return commandExecutor.execute(command);
     }

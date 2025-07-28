@@ -61,7 +61,7 @@ public class SelectAssigneeDialog extends DialogWrapper {
         this.userListView.getEmptyText().setText("");
         this.userListView.setPaintBusy(true);
         this.listModel.removeAll();
-        this.gitLab.searchUsers2(this.userTextField.getText(), 100, this::onProgressManager, new JBProgressIndicator())
+        this.gitLab.searchUsers(this.userTextField.getText(), 100, this::onProgressManager, new JBProgressIndicator())
                 .thenAccept(this::updateUsers)
                 .exceptionally(t -> {
                     this.userListView.getEmptyText().setText("Unable to load users");
