@@ -58,7 +58,7 @@ public class GitLab {
 
         Request request = prepareRequest("/version").build();
         this.httpClient.newCall(request)
-                .enqueue(new JsonHttpResponseCallback<>(VersionResponse.class, result, this.gson) {
+                .enqueue(new JsonObjectCallback<>(VersionResponse.class, result, this.gson) {
                     @Override
                     protected void onRawResponseBody(Response response, String rawResponseBodyString) {
                         if (response.code() != 200) {
@@ -85,7 +85,7 @@ public class GitLab {
         CompletableFuture<List<GitLabProject>> result = new CompletableFuture<>();
 
         Call call = httpClient.newCall(request);
-        call.enqueue(JsonHttpResponseCallback.ofList(result, gson));
+        call.enqueue(new JsonListCallback<>(GitLabProject.class, result, gson));
         return result;
     }
 
@@ -100,7 +100,7 @@ public class GitLab {
 
         CompletableFuture<List<User>> result = new CompletableFuture<>();
         Call call = httpClient.newCall(request);
-        call.enqueue(JsonHttpResponseCallback.ofList(result, gson));
+        call.enqueue(new JsonListCallback<>(User.class, result, gson));
         return result;
     }
 
@@ -111,7 +111,7 @@ public class GitLab {
         CompletableFuture<List<User>> result = new CompletableFuture<>();
 
         Call call = httpClient.newCall(request);
-        call.enqueue(JsonHttpResponseCallback.ofList(result, gson));
+        call.enqueue(new JsonListCallback<>(User.class, result, gson));
         return result;
     }
 
@@ -123,7 +123,7 @@ public class GitLab {
 
         httpClient
                 .newCall(request)
-                .enqueue(JsonHttpResponseCallback.ofList(result, this.gson));
+                .enqueue(new JsonListCallback<>(User.class, result, gson));
         return result.thenApply(users -> users.get(0));
     }
 
@@ -147,7 +147,7 @@ public class GitLab {
         CompletableFuture<MergeRequestResponse> result = new CompletableFuture<>();
 
         Call call = httpClient.newCall(request);
-        call.enqueue(new JsonHttpResponseCallback<>(MergeRequestResponse.class, result, this.gson) {
+        call.enqueue(new JsonObjectCallback<>(MergeRequestResponse.class, result, this.gson) {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.code() == 409) {
