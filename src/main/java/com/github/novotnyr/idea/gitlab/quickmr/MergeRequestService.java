@@ -45,8 +45,8 @@ public class MergeRequestService {
     }
 
     public CompletableFuture<MergeRequestResponse> submit(String gitLabProjectId, MergeRequestRequest mergeRequestRequest, Settings settings) throws SourceAndTargetBranchCannotBeEqualException {
-        GitLab gitLab = createGitLab(settings);
-        return gitLab.createMergeRequest(gitLabProjectId, mergeRequestRequest);
+        return createGitLab(settings)
+                .thenCompose(gitLab -> gitLab.createMergeRequest(gitLabProjectId, mergeRequestRequest));
     }
 
     public CompletableFuture<MergeRequestResponse> createMergeRequest(NewMergeRequest newMergeRequest, Settings settings) throws SourceAndTargetBranchCannotBeEqualException, SettingsNotInitializedException {
@@ -98,8 +98,11 @@ public class MergeRequestService {
 
 
     @NotNull
-    protected GitLab createGitLab(Settings settings) {
-        return new GitLab(settings.getGitLabUri(), settings.getAccessToken(), settings.isInsecureTls());
+    protected CompletableFuture<GitLab> createGitLab(Settings settings) {
+        String uri = settings.getGitLabUri();
+        boolean insecureTls = settings.isInsecureTls();
+        return settings.getAccessToken()
+                       .thenApply(accessToken -> new GitLab(uri, accessToken, insecureTls));
     }
 
     @NotNull

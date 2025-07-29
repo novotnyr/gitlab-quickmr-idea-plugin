@@ -134,7 +134,7 @@ public class SettingsUi implements Configurable {
 
     private void bindToComponents(Settings settings) {
         this.urlTextField.setText(settings.getGitLabUri());
-        this.accessTokenTextField.setText(settings.getAccessToken());
+        settings.getAccessToken().thenAccept(this.accessTokenTextField::setText);
         this.targetBranchTextField.setText(settings.getDefaultTargetBranch());
         this.mergeRequestTitleTextField.setText(settings.getDefaultTitle());
         this.mergeRequestDescriptionTextArea.setText(settings.getDefaultDescription());
@@ -360,12 +360,7 @@ public class SettingsUi implements Configurable {
 
     private boolean isAccessTokenModified() {
         int accessTokenHash = new String(this.accessTokenTextField.getPassword()).hashCode();
-        String storedAccessToken = settings.getAccessToken();
-        if (storedAccessToken == null) {
-            storedAccessToken = "";
-        }
-        int storedAccessTokenHash = storedAccessToken.hashCode();
-        return accessTokenHash != storedAccessTokenHash;
+        return accessTokenHash != this.accessTokenHashCode;
     }
 
     @Override
@@ -376,11 +371,13 @@ public class SettingsUi implements Configurable {
     }
 
     private void cacheAccessToken() {
-        String accessToken = this.settings.getAccessToken();
-        if (accessToken == null) {
-            accessToken = "";
-        }
-        this.accessTokenHashCode = accessToken.hashCode();
+        this.settings.getAccessToken().thenAccept(accessToken -> {
+            String token = accessToken;
+            if (token == null) {
+                token = "";
+            }
+            this.accessTokenHashCode = token.hashCode();
+        });
     }
 
     @Override

@@ -4,13 +4,16 @@ import com.github.novotnyr.idea.gitlab.User;
 import com.intellij.credentialStore.CredentialAttributes;
 import com.intellij.credentialStore.Credentials;
 import com.intellij.ide.passwordSafe.PasswordSafe;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import com.intellij.util.concurrency.annotations.RequiresBackgroundThread;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @State(name = Settings.NAME, storages = @Storage("gitlab-quickmr.xml"))
 public class Settings implements PersistentStateComponent<Settings.State> {
@@ -102,16 +105,26 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         this.state.gitLabUri = gitLabUri;
     }
 
-    public String getAccessToken() {
+    public CompletableFuture<String> getAccessToken() {
+        CompletableFuture<String> result = new CompletableFuture<>();
+
+        ApplicationManager.getApplication().executeOnPooledThread(() -> {
+            result.complete(doGetAccessToken());
+        });
+        return result;
+    }
+
+    @RequiresBackgroundThread
+    private String doGetAccessToken() {
+        String accessToken = null;
         CredentialAttributes credentialAttributes = getCredentialAttributes();
-        if (credentialAttributes == null) {
-            return null;
+        if (credentialAttributes != null) {
+            Credentials credentials = PasswordSafe.getInstance().get(credentialAttributes);
+            if (credentials != null) {
+                accessToken = credentials.getPasswordAsString();
+            }
         }
-        Credentials credentials = PasswordSafe.getInstance().get(credentialAttributes);
-        if (credentials == null) {
-            return null;
-        }
-        return credentials.getPasswordAsString();
+        return accessToken;
     }
 
     public void setAccessToken(String accessToken) {
