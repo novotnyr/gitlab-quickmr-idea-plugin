@@ -22,13 +22,13 @@ import java.util.concurrent.CompletableFuture;
 public class GitLab {
     public static final String PRIVATE_TOKEN_HEADER = "Private-Token";
 
-    private String baseUri;
+    private final String baseUri;
 
-    private String privateToken;
+    private final String privateToken;
 
-    private OkHttpClient httpClient;
+    private final OkHttpClient httpClient;
 
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
 
     public GitLab(String baseUri, String privateToken) {
         this(baseUri, privateToken, false);
