@@ -109,6 +109,4 @@ public class MergeRequestService {
     private String getSourceBranch(SelectedModule selectedModule) {
         return this.gitService.getCurrentBranch(selectedModule);
     }
-
-
 }
