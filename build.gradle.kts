@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.github.novotnyr"
-version = "25-SNAPSHOT"
+version = "25"
 
 repositories {
     mavenCentral()
@@ -36,7 +36,9 @@ intellijPlatform {
         }
         changeNotes = """
             <ul>
-            <li></li>
+            <li>Support JetBrains IDE 2025.2</li>
+            <li>Improve compatibility with Platform API</li>
+            <li>Fix various threading issues</li>
             </ul>
         """.trimIndent()
     }
