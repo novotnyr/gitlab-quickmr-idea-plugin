@@ -1,6 +1,3 @@
-import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
-import org.jetbrains.intellij.platform.gradle.models.ProductRelease
-
 plugins {
     id("java")
     id("org.jetbrains.intellij.platform") version "2.6.0"
