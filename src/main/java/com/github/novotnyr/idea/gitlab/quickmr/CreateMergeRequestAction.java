@@ -12,7 +12,6 @@ import com.github.novotnyr.idea.gitlab.quickmr.settings.SettingsUi;
 import com.intellij.ide.browsers.BrowserLauncher;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationAction;
-import com.intellij.notification.NotificationListener;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -177,31 +176,31 @@ public class CreateMergeRequestAction extends AnAction {
         String assignee = mergeRequestResponse.getAssigneeName();
         String assigneeMessage;
         if (assignee != null) {
-            assigneeMessage = "Assigned in <i>" + projectName + "</i> to " + assignee + "<br/><br/>";
+            assigneeMessage = "Assigned in <i>" + projectName + "</i> to " + assignee;
         } else {
-            assigneeMessage = "Created in <i>" + projectName + "</i><br/><br/>";
+            assigneeMessage = "Created in <i>" + projectName + "</i>";
         }
-
 
         String title = "Merge Request #" + number + " Created";
 
-        NotificationListener notificationListener = (notification, event) -> {};
+        NotificationAction notificationAction = null;
         String webUrl = mergeRequestResponse.getWebUrl();
         if (Strings.isNotEmpty(webUrl)) {
-            assigneeMessage += "<a href='mr'>View in GitLab</a>";
-            notificationListener = (notification, hyperlinkEvent) -> {
+            notificationAction = NotificationAction.createSimpleExpiring("View in GitLab", () -> {
                 try {
                     BrowserLauncher.getInstance().browse(new URI(webUrl));
                 } catch (URISyntaxException e) {
                     e.printStackTrace();
                 }
-            };
+            });
         }
 
-        var notification = new Notification("GitLab Merge Request", title,
-                assigneeMessage, NotificationType.INFORMATION)
-                .setListener(notificationListener);
-        Notifications.Bus.notify(notification);
+        var notification = new Notification("GitLab Merge Request",
+                title, assigneeMessage, NotificationType.INFORMATION);
+        if (notificationAction != null) {
+            notification.addAction(notificationAction);
+        }
+        notification.notify(project);
     }
 
     private Void createErrorNotification(Throwable t) {
