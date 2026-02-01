@@ -5,11 +5,12 @@ import com.github.novotnyr.idea.gitlab.GitLab;
 import com.github.novotnyr.idea.gitlab.User;
 import com.github.novotnyr.idea.gitlab.quickmr.JBProgressIndicator;
 import com.github.novotnyr.idea.gitlab.quickmr.UserToStringConverter;
+import com.github.novotnyr.idea.gitlab.quickmr.UserToStringConvertor;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.ui.CollectionListModel;
-import com.intellij.ui.ListSpeedSearch;
+import com.intellij.ui.TreeUIHelper;
 import com.intellij.ui.components.JBList;
 import org.jdesktop.swingx.renderer.DefaultListRenderer;
 
@@ -35,6 +36,7 @@ public class SelectAssigneeDialog extends DialogWrapper {
 
     private CollectionListModel<User> listModel = new CollectionListModel<>();
     private UserToStringConverter userToStringConverter = new UserToStringConverter();
+    private UserToStringConvertor userToStringConvertor = new UserToStringConvertor();
 
     @SuppressWarnings("unchecked")
     public SelectAssigneeDialog(Project project, GitLab gitLab) {
@@ -46,7 +48,7 @@ public class SelectAssigneeDialog extends DialogWrapper {
 
         this.userListView.setModel(this.listModel);
         this.userListView.setCellRenderer(new DefaultListRenderer(userToStringConverter));
-        new ListSpeedSearch(this.userListView, this.userToStringConverter);
+        TreeUIHelper.getInstance().installListSpeedSearch(this.userListView, this.userToStringConvertor);
 
         this.searchButton.addActionListener(this::onSearchButtonActionPerformed);
 
