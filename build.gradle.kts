@@ -36,7 +36,7 @@ intellijPlatform {
         }
         changeNotes = """
             <ul>
-            <li></li>
+            <li>Change the plugin name to comply with GitLab trademark guidelines</li>
             </ul>
         """.trimIndent()
     }

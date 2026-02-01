@@ -1,6 +1,6 @@
 <idea-plugin>
     <id>com.github.novotnyr.gitlab-quickmr-idea-plugin</id>
-    <name>GitLab Quick Merge Request</name>
+    <name>Quick Merge Request for GitLab</name>
     <version>RELEASE</version>
     <vendor>Róbert Novotný</vendor>
 
@@ -11,11 +11,12 @@
       <li>Specify your favourite merge request assignees</li>
       <li>Supports GitLab API v4</li>
       </ul>
+      This plugin is not affiliated, endorsed, sponsored, or approved with or by GitLab Inc.
     ]]></description>
 
     <change-notes><![CDATA[
       <ul>
-        <li>Show explicit context menu item when no assignees are set up in preferences</li>
+        <li>/li>
       </ul>
     ]]>
     </change-notes>
