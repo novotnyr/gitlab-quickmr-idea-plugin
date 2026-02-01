@@ -31,12 +31,14 @@ dependencies {
 intellijPlatform {
     pluginConfiguration {
         ideaVersion {
-            sinceBuild = "223"
-            untilBuild = "252.*"
+            sinceBuild = "233"
+            untilBuild = "253.*"
         }
         changeNotes = """
             <ul>
             <li>Change the plugin name to comply with GitLab trademark guidelines</li>
+            <li>Support JetBrains IDE 2025.3</li>
+            <li>Improve compatibility with Platform API</li>            
             </ul>
         """.trimIndent()
     }
