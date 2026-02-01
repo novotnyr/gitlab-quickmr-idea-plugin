@@ -55,7 +55,7 @@ public class CreateMergeRequestAction extends AnAction {
         }
         getProjectName(selectedModule).thenAccept(gitLabProjectId -> {
             createMergeRequestAsync(selectedModule, gitLabProjectId);
-        });
+        }).exceptionally(this::createErrorNotification);
     }
 
     @RequiresBackgroundThread
@@ -209,7 +209,7 @@ public class CreateMergeRequestAction extends AnAction {
         String messagePrefix = "Failed to create merge request: ";
         Throwable exception = unwrapCompletionException(t);
         String message = messagePrefix + exception.getMessage();
-        NotificationType notificationType = null;
+        NotificationType notificationType = NotificationType.ERROR;
         if (exception instanceof RequestCannotBeSubmittedException) {
             // user cancelled
             return null;
@@ -222,6 +222,11 @@ public class CreateMergeRequestAction extends AnAction {
         if (exception instanceof AccessDeniedException) {
             title = "GitLab Access Denied";
             message = "Please check Access Token in Preferences.";
+            notificationType = NotificationType.ERROR;
+        }
+        if (exception instanceof NoSuchGitRemoteException) {
+            title = "No Git remotes are configured";
+            message = "Add a remote to create merge requests";
             notificationType = NotificationType.ERROR;
         }
 
