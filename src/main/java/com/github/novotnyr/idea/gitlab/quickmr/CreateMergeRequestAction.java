@@ -11,6 +11,7 @@ import com.github.novotnyr.idea.gitlab.quickmr.settings.Settings;
 import com.github.novotnyr.idea.gitlab.quickmr.settings.SettingsUi;
 import com.intellij.ide.browsers.BrowserLauncher;
 import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationAction;
 import com.intellij.notification.NotificationListener;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
@@ -80,15 +81,14 @@ public class CreateMergeRequestAction extends AnAction {
         } catch (SourceAndTargetBranchCannotBeEqualException e) {
             this.createErrorNotification(e);
         } catch (SettingsNotInitializedException e) {
-            var mrNotConfigured = new Notification("GitLab Merge Request",
-                    "Quick Merge Request are not configured",
-                    "Quick Merge Requests are not configured<br/> <a href='link'>Configure</a>",
+            new Notification("GitLab Merge Request",
+                    "GitLab Quick Merge Requests are not configured",
+                    "",
                     NotificationType.INFORMATION)
-                    .setListener((notification, evt) -> {
-                        ShowSettingsUtil.getInstance().showSettingsDialog(project, SettingsUi.class);
-                        notification.expire();
-                    });
-            Notifications.Bus.notify(mrNotConfigured);
+                    .addAction(NotificationAction.createSimpleExpiring("Configure", () ->
+                            ShowSettingsUtil.getInstance()
+                                            .showSettingsDialog(project, SettingsUi.class)))
+                    .notify(project);
         }
     }
 
