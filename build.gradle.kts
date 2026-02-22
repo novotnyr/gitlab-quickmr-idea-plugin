@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.github.novotnyr"
-version = "26"
+version = "27-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -36,9 +36,7 @@ intellijPlatform {
         }
         changeNotes = """
             <ul>
-            <li>Change the plugin name to comply with GitLab trademark guidelines</li>
-            <li>Support JetBrains IDE 2025.3</li>
-            <li>Improve compatibility with Platform API</li>            
+            <li>/li>            
             </ul>
         """.trimIndent()
     }
