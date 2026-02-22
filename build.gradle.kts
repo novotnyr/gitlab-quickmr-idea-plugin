@@ -32,11 +32,11 @@ intellijPlatform {
     pluginConfiguration {
         ideaVersion {
             sinceBuild = "233"
-            untilBuild = "253.*"
+            untilBuild = "261.*"
         }
         changeNotes = """
             <ul>
-            <li>/li>            
+            <li>Support JetBrains IDE 2026.1</li>            
             </ul>
         """.trimIndent()
     }
