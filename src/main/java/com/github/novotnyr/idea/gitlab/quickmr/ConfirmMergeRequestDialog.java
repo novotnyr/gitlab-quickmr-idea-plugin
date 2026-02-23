@@ -9,7 +9,8 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.CollectionComboBoxModel;
-import com.intellij.ui.ListCellRendererWrapper;
+import com.intellij.ui.SimpleListCellRenderer;
+import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
 import git4idea.GitLocalBranch;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +21,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -153,21 +153,20 @@ public class ConfirmMergeRequestDialog extends DialogWrapper {
         }
         this.assigneeComboBox.setModel(model);
         this.assigneeComboBox.setSelectedItem(implicitAssignee);
-        this.assigneeComboBox.setRenderer(new ListCellRendererWrapper<>() {
-            @Override
-            public void customize(JList list, User user, int index, boolean selected, boolean hasFocus) {
-                if (User.NONE.equals(user)) {
-                    setText("- none -");
-                    return;
-                }
-                String renderedText = user.getName() + " (" + user.getUsername() + ")";
-                setText(renderedText);
-            }
-        });
+        this.assigneeComboBox.setRenderer(SimpleListCellRenderer.create(this::renderAssignee));
     }
 
     public boolean isSourceBranchDeletedOnAccept() {
         return this.deleteSourceBranchCheckBox.isSelected();
+    }
+
+    private void renderAssignee(@NotNull JBLabel label, User user, int index) {
+        if (User.NONE.equals(user)) {
+            label.setText("- none -");
+            return;
+        }
+        String renderedText = user.getName() + " (" + user.getUsername() + ")";
+        label.setText(renderedText);
     }
 }
 
