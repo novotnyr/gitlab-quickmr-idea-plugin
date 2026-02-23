@@ -21,6 +21,7 @@ import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.vcs.VcsConfigurableProvider;
 import com.intellij.ui.AnActionButton;
 import com.intellij.ui.CollectionListModel;
+import com.intellij.ui.SimpleListCellRenderer;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.awt.RelativePoint;
 import com.intellij.ui.components.JBList;
@@ -34,16 +35,13 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.net.URI;
@@ -94,22 +92,13 @@ public class SettingsUi implements Configurable {
 
         this.assigneeList = new JBList<>();
         this.assigneeList.setModel(this.assigneeListModel);
-        this.assigneeList.setCellRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                User user = (User) value;
-                String renderedText = user.getName() + " (" + user.getUsername() + ")";
-                if (index == 0) {
-                    Component component = super.getListCellRendererComponent(list, renderedText, index, isSelected, cellHasFocus);
-                    if (component instanceof JLabel) {
-                        JLabel label = (JLabel) component;
-                        label.setIcon(AllIcons.Toolwindows.ToolWindowFavorites);
-                        return label;
-                    }
-                }
-                return super.getListCellRendererComponent(list, renderedText, index, isSelected, cellHasFocus);
+        this.assigneeList.setCellRenderer(SimpleListCellRenderer.create((label, user, index) -> {
+            if (index == 0) {
+                label.setIcon(AllIcons.Toolwindows.ToolWindowFavorites);
             }
-        });
+            String renderedText = user.getName() + " (" + user.getUsername() + ")";
+            label.setText(renderedText);
+        }));
 
         this.assigneeListPlaceHolder.setLayout(new BorderLayout());
         this.assigneeListPlaceHolder.add(
