@@ -79,8 +79,6 @@ public class SettingsUi implements Configurable {
 
     private Settings settings;
 
-    private boolean serverUrlValidated = true;
-
     /**
      * Cached hashcode of access token to speed up isModified()
      */
