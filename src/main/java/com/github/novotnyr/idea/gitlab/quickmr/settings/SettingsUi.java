@@ -28,6 +28,7 @@ import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBPasswordField;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.concurrency.annotations.RequiresEdt;
+import icons.Icons;
 import okhttp3.HttpUrl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpResponseException;
@@ -95,7 +96,7 @@ public class SettingsUi implements Configurable {
         this.assigneeList.setModel(this.assigneeListModel);
         this.assigneeList.setCellRenderer(SimpleListCellRenderer.create((label, user, index) -> {
             if (index == 0) {
-                label.setIcon(AllIcons.Toolwindows.ToolWindowFavorites);
+                label.setIcon(Icons.Star);
             }
             String renderedText = user.getName() + " (" + user.getUsername() + ")";
             label.setText(renderedText);
