@@ -36,7 +36,8 @@ intellijPlatform {
         }
         changeNotes = """
             <ul>
-            <li>Support JetBrains IDE 2026.1</li>            
+            <li>Support JetBrains IDE 2026.1</li>
+            <li>Fix reordering of default assignees in Settings</li>
             </ul>
         """.trimIndent()
     }

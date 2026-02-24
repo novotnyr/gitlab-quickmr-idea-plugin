@@ -47,6 +47,7 @@ import java.awt.event.ItemEvent;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletionException;
 import java.util.function.Consumer;
 
@@ -103,7 +104,7 @@ public class SettingsUi implements Configurable {
         this.assigneeListPlaceHolder.setLayout(new BorderLayout());
         this.assigneeListPlaceHolder.add(
                 ToolbarDecorator
-                        .createDecorator(this.assigneeList)
+                        .createDecorator(this.assigneeList, this.assigneeListModel)
                         .setAddAction(this::onAddAssignee)
                         .setAddActionUpdater(this::isAddAssigneeEnabled)
                         .setRemoveAction(this::onRemoveAssignee)
@@ -332,9 +333,7 @@ public class SettingsUi implements Configurable {
                 && SettingUtils.equals(this.mergeRequestDescriptionTextArea, settings.getDefaultDescription())
                 && SettingUtils.equals(this.labelsTextField, settings.getDefaultLabels())
                 && this.enableDefaultAssigneeActionCheckBox.isSelected() == (settings.isEnableMergeRequestToFavoriteAssignee())
-                && SettingUtils.hasSameUniqueElements(
-                        this.assigneeListModel.getItems(),
-                        settings.getDefaultAssignees())
+                && Objects.equals(this.assigneeListModel.getItems(), settings.getDefaultAssignees())
                 && this.enableAssigneesCheckBox.isSelected() == (settings.isAssigneesEnabled())
                 && this.removeSourceBranchCheckbox.isSelected() == (settings.isRemoveSourceBranchOnMerge())
                 && this.squashCommitsCheckBox.isSelected() == (settings.isSquashCommits())
