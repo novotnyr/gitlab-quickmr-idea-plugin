@@ -23,7 +23,7 @@
 
     <idea-version since-build="145.0"/>
 
-    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.vcs</depends>
     <depends>Git4Idea</depends>
 
