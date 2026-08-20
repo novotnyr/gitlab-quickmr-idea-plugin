@@ -14,6 +14,7 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationAction;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
@@ -148,6 +149,11 @@ public class CreateMergeRequestAction extends AnAction {
         e.getPresentation().setEnabledAndVisible(true);
     }
 
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.BGT;
+    }
+
     private CompletableFuture<String> getProjectName(SelectedModule selectedModule) {
         CompletableFuture<String> result = new CompletableFuture<>();
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
@@ -246,5 +252,4 @@ public class CreateMergeRequestAction extends AnAction {
     private static class RequestCannotBeSubmittedException extends RuntimeException {
         // empty body
     }
-
 }

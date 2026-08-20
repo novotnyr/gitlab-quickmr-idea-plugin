@@ -3,6 +3,7 @@ package com.github.novotnyr.idea.gitlab.quickmr;
 import com.github.novotnyr.idea.gitlab.User;
 import com.github.novotnyr.idea.gitlab.quickmr.settings.Settings;
 import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
@@ -45,5 +46,10 @@ public class CreateMergeRequestAndAssignToActionGroup extends ActionGroup {
         }
         Settings settings = project.getService(Settings.class);
         e.getPresentation().setVisible(settings.isAssigneesEnabled());
+    }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.BGT;
     }
 }
