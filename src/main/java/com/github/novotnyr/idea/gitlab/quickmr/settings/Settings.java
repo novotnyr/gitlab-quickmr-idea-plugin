@@ -198,7 +198,7 @@ public class Settings implements PersistentStateComponent<Settings.State> {
         }
         String serviceName = NAME + "\t" + getGitLabUri();
         String userName = getGitLabUri();
-        return new CredentialAttributes(serviceName, userName, this.getClass(), false);
+        return new CredentialAttributes(serviceName, userName);
     }
 
     public static class State {
