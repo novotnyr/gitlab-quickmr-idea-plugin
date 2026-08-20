@@ -1,17 +1,10 @@
 plugins {
     id("java")
-    id("org.jetbrains.intellij.platform") version "2.18.1"
+    id("org.jetbrains.intellij.platform")
 }
 
 group = "com.github.novotnyr"
 version = "28-SNAPSHOT"
-
-repositories {
-    mavenCentral()
-    intellijPlatform {
-        defaultRepositories()
-    }
-}
 
 dependencies {
     implementation("com.google.code.gson:gson:2.13.1")
@@ -24,7 +17,6 @@ dependencies {
     intellijPlatform {
         intellijIdeaCommunity("2025.1.3")
         bundledPlugin("Git4Idea")
-        pluginVerifier()
     }
 }
 
@@ -44,11 +36,6 @@ intellijPlatform {
     publishing {
         val intellijPublishToken: String by project
         token = intellijPublishToken
-    }
-    pluginVerification {
-        ides {
-            recommended()
-        }
     }
 }
 
