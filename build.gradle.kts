@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.github.novotnyr"
-version = "28-SNAPSHOT"
+version = "28"
 
 dependencies {
     implementation("com.google.code.gson:gson:2.13.1")
@@ -27,8 +27,7 @@ intellijPlatform {
         }
         changeNotes = """
             <ul>
-            <li>Support JetBrains IDE 2026.1</li>
-            <li>Fix reordering of default assignees in Settings</li>
+            <li>Improve compatibility with current IDEs</li>
             </ul>
         """.trimIndent()
     }
